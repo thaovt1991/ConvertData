@@ -32,11 +32,11 @@ namespace ConverData
         private void Form1_Load(object sender, EventArgs e)
         {
             numericPage.Value = 1;
-            numericPage.Minimum = 1;    
+            numericPage.Minimum = 1;
             //numericPage.Maximum = 1000;   // Tối đa 1000 dòng để tránh treo ram
 
-           
-            numericPageSize.Minimum = 1;  
+
+            numericPageSize.Minimum = 1;
             numericPageSize.Maximum = 20000;   // Tối đa 20000 dòng để tránh treo ram
             numericPageSize.Value = 1; // 1000;  //t
 
@@ -44,7 +44,16 @@ namespace ConverData
             //connectStringSQL.Text = ConnectStringIn = "Server=172.16.12.230\\MSSQLSERVER2025;Database=LV.Shell;User Id=sa;Password=Lv@123456";
             connectStringSQL.Text = ConnectStringIn = "Server=172.16.12.230\\MSSQLSERVER2025;Database=LV.Shell;User Id=sa;Password=Lv@123456;MultipleActiveResultSets=true;Encrypt=False";
             connectStringMG.Text = ConnectStringOut = "mongodb://admin:Erm%402021@172.16.7.33:27017";
-            databaseName.Text = _databaseName ="developer_Data";
+            databaseName.Text = _databaseName = "developer_Data";
+
+            //Date picker
+            // Đối với DateTimePicker bắt đầu
+            //dateTimePicker1.Format = DateTimePickerFormat.Custom;
+            //dateTimePicker1.CustomFormat = "dd/MM/yyyy";
+
+            //// Đối với DateTimePicker kết thúc
+            //dateTimePicker2.Format = DateTimePickerFormat.Custom;
+            //dateTimePicker2.CustomFormat = "dd/MM/yyyy";
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -116,7 +125,7 @@ namespace ConverData
                 using (var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(5)))
                 {
                     var dbList = await _client.ListDatabaseNamesAsync(cts.Token);
-                   var listDatabase = await dbList.ToListAsync();
+                    var listDatabase = await dbList.ToListAsync();
 
                     // MessageBox.Show("Kết nối MongoDB thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     // --- LOGIC KẾT NỐI ---
@@ -125,12 +134,12 @@ namespace ConverData
                     bttConnectMG.BackColor = Color.LightCoral;
 
                     connectStringMG.Enabled = false;
-                   
+
                     lblConnectMG.Text = "✔";
                     lblConnectMG.ForeColor = Color.Blue;
 
                     richTextBox1.AppendText($"{DateTime.Now}: Đã kết nối MongoDB thành công.\n");
-                     _client = null; //chỉ là kiểm tra kết nối thôi nên conect xong tắt
+                    _client = null; //chỉ là kiểm tra kết nối thôi nên conect xong tắt
 
                     //Kiểm tra databasename
                     if (!string.IsNullOrEmpty(_databaseName) && listDatabase.Contains(_databaseName))
@@ -141,7 +150,7 @@ namespace ConverData
                     else richTextBox1.AppendText($"Không tìm thấy database name {_databaseName}.\n");
                     ;
                 }
-            
+
             }
             catch (MongoConfigurationException ex)
             {
@@ -158,7 +167,7 @@ namespace ConverData
                 richTextBox1.AppendText("Lỗi kết nối: " + ex.Message);
                 //MessageBox.Show("Lỗi kết nối: " + ex.Message);
             }
-            
+
         }
 
         private async Task GetDataCollection()
@@ -253,8 +262,8 @@ namespace ConverData
                 MessageBox.Show("Không thể kết nối đến SQL Server!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-          
-            
+
+
         }
         private async Task<bool> IsSqlConnected(string connectionString)
         {
@@ -374,12 +383,12 @@ namespace ConverData
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-         
+
         }
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-          
+
         }
 
         private void textBox3_TextChanged_1(object sender, EventArgs e)
@@ -387,6 +396,14 @@ namespace ConverData
             _databaseName = databaseName.Text;
         }
 
-       
+        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dateTimePicker3_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace ConvertData.Model.ModelSQL
 {
     public class SQLProject
     {
+        public Guid Id { get; set; }
         /// <summary>
         /// Mã dự án
         /// </summary>
@@ -127,6 +128,7 @@ namespace ConvertData.Model.ModelSQL
         //public List<ProjectTag> ProjectTags { get; set; }
     }
 
+    
     public enum ProjectStatus : byte
     {
         [Display(Name = "Tạo mới")]

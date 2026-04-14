@@ -75,8 +75,18 @@ namespace ConvertData.WorkerConvert
 
                 if (listProjects.Count > 0)
                 {
-                    _parentForm.richTextBox1.AppendText($"Tìm thấy {listProjects.Count} dự án {(!string.IsNullOrEmpty(startCreatedDate) ? "từ " + startCreatedDate + " " : "")}{(!string.IsNullOrEmpty(endCreatedDate) ? "đến " + endCreatedDate : "")}");
+                    _parentForm.richTextBox1.AppendText($"Tìm thấy {listProjects.Count} dự án {(!string.IsNullOrEmpty(startCreatedDate) ? "từ " + startCreatedDate + " " : "")}{(!string.IsNullOrEmpty(endCreatedDate) ? "đến " + endCreatedDate : "")}\n");
                     // Thực hiện tiếp logic convert dữ liệu ở đây...
+                    //lấy danh sách AD User tương ứng
+                    var allUniqueUserNames = listProjects
+                                            .SelectMany(p => p.Permissions.Select(m => m.ObjectID?.ToString())
+                                            .Concat(listProjects.Select(p => p.CreatedBy)))                      
+                                            .Where(id => !string.IsNullOrEmpty(id))                           
+                                            .Distinct(StringComparer.OrdinalIgnoreCase)  // Lấy duy nhất, bất chấp hoa thường
+                                            .ToList();
+                    var dicUser = await GetInfoUsers(allUniqueUserNames);
+
+                    //Chạy
                     var i = 0;
                     IProgress<int> progress = new Progress<int>(value =>
                     {
@@ -86,7 +96,7 @@ namespace ConvertData.WorkerConvert
                     foreach (var item in listProjects)
                     {
                         //Chuyen dataa
-                        var isSuccces = await AddProjectToSQLServer(item);
+                        var isSuccces = await AddProjectToSQLServer(item, dicUser);
                         //end chuyeern
                         //UPDATE NGAY
                         if (isSuccces)
@@ -128,11 +138,12 @@ namespace ConvertData.WorkerConvert
 
         }
         //Update sang SQL sever
-        private SQLProject MapToSQL(PM_Projects mongoItem)
+        private SQLProject MapToSQL(PM_Projects mongoItem, Dictionary<string,Guid> dic)
         {
             var project = new SQLProject
             {
-                Code = mongoItem.ProjectID ?? Guid.NewGuid().ToString().Substring(0, 8), // Ví dụ logic tạo mã
+                Id = Guid.NewGuid(),
+                Code = mongoItem.ProjectID ,
                 Name = mongoItem.ProjectName ?? "No Name",
                 // Description = mongoItem.Description,
                 StartDate = mongoItem.StartDate != null ? mongoItem.StartDate.Value : mongoItem.CreatedOn,
@@ -178,23 +189,28 @@ namespace ConvertData.WorkerConvert
                 }
             }
 
+            if (dic.ContainsKey(mongoItem.CreatedBy.ToLower()) && dic.TryGetValue(mongoItem.CreatedBy.ToLower(),out var createdBy))
+            {
+                project.CreatedBy = createdBy;
+            }
+
             return project;
         }
          
       
 
-        public async Task<bool> AddProjectToSQLServer(PM_Projects item)
+        public async Task<bool> AddProjectToSQLServer(PM_Projects item, Dictionary<string,Guid> dicUsers)
         {
             using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
             {
-                SQLProject project = MapToSQL(item);
+                SQLProject project = MapToSQL(item, dicUsers);
                 //Conver
 
                 string sql = @"
                                 DELETE FROM qlcv.Projects WHERE Code = @Code;   --//Xóa cũ 
 
                                 INSERT INTO qlcv.Projects (
-                                    Code, Name, Description, Note, Avatar, 
+                                    Id,Code, Name, Description, Note, Avatar, 
                                     Status, ProjectType, PriorityType, 
                                     StartDate, EndDate, SortOrder, 
                                     IsProgressAutoCalculated, ProgressPercentage, 
@@ -203,7 +219,7 @@ namespace ConvertData.WorkerConvert
                                     DefaultKanbanGroupMode, CreatedBy,CreatedDate,UpdatedDate
                                 ) 
                                 VALUES (
-                                    @Code, @Name, @Description, @Note, @Avatar, 
+                                    @Id,@Code, @Name, @Description, @Note, @Avatar, 
                                     @Status, @ProjectType, @PriorityType, 
                                     @StartDate, @EndDate, @SortOrder, 
                                     @IsProgressAutoCalculated, @ProgressPercentage, 
@@ -215,14 +231,109 @@ namespace ConvertData.WorkerConvert
                 try
                 {
                     int rowsAffected = await db.ExecuteAsync(sql, project);
-                    return rowsAffected > 0;
+                    var result = rowsAffected > 0;
+                    if (result)
+                    {
+                        result = await UpdateMembersProject(item, project.Id,dicUsers);
+                    }
+
+                    return result;
                 }
                 catch (Exception ex)
                 {
-                    _parentForm.richTextBox1.AppendText($"❌ Lỗi SQL Insert: {ex.Message}");
+                    _parentForm.richTextBox1.AppendText($"❌ Lỗi SQL Insert: {ex.Message}\n");
                     return false;
                 }
             }
+        }
+
+        private async Task<bool> UpdateMembersProject(PM_Projects mogoItem, Guid projectId, Dictionary<string, Guid> dic)
+        {
+            var sqlMembers = new List<SQLProjectMember>();
+            var i = 0;
+            foreach (var member in mogoItem?.Permissions)
+            {
+
+                var projectMb = new SQLProjectMember()
+                {
+                    Id = Guid.NewGuid(),
+                    ProjectId = projectId,
+                    ProjectMemberType = member.RoleType == "PM" ? 1 : (member.RoleType == "S" ? 3 : 2),
+                    SortOrder = i,
+                    CreatedBy = Guid.Parse("A1B2C3D4-E5F6-7890-ABCD-1234567890AB"), // ID cố định hoặc lấy từ cấu hình
+                    MemberId = Guid.NewGuid(), //tạo ảo sau này máp với User
+                    ActiveFlag = 0,
+                    CreatedDate = member.CreatedOn > DateTime.MinValue ? member.CreatedOn : mogoItem.CreatedOn,
+                };
+                if (dic.ContainsKey(member.ObjectID.ToLower()) && dic.TryGetValue(member.ObjectID.ToLower(), out var memberID))
+                {
+                    projectMb.MemberId = memberID;
+                }
+                var createdBy = mogoItem.CreatedBy.ToLower();
+                if (dic.ContainsKey(createdBy) && dic.TryGetValue(createdBy, out var createdByID))
+                {
+                    projectMb.CreatedBy = createdByID;
+                }
+
+                i++;
+               sqlMembers.Add(projectMb);
+            }
+            if (sqlMembers.Any())
+            {
+                using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
+                {
+                    string insertSql = @"
+                                        INSERT INTO qlcv.ProjectMembers (
+                                        ProjectId, ModuleType, ModuleObjectId,MemberId,ProjectMemberType,
+                                        ActiveFlag, CreatedBy,SortOrder,CreatedDate
+                                        ) 
+                                        VALUES(
+                                        @ProjectId,@ModuleType, @ModuleObjectId,@MemberId,@ProjectMemberType,
+                                        @ActiveFlag, @CreatedBy,@SortOrder,@CreatedDate
+                                        )";
+
+                    try
+                    {
+                        await db.ExecuteAsync(insertSql, sqlMembers);
+                    }
+                    catch(Exception ex)
+                    {
+                        _parentForm.richTextBox1.AppendText($"❌ Lỗi SQL Insert Member: {ex.Message}\n");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public async Task<Dictionary<string,Guid>> GetInfoUsers(List<string> listUserIDs)
+        {
+            if (listUserIDs == null || listUserIDs?.Count == 0) return new Dictionary<string, Guid>();
+            try
+            {
+                using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
+                {
+                    string sql = @"
+                        SELECT Id, UserName 
+                        FROM [core].[Users] 
+                        WHERE LOWER(UserName) IN @UserNames";
+
+                    var usersAll = await db.QueryAsync<SQLCoreUserBase>(sql, new { UserNames = listUserIDs });
+                    var userDict = usersAll.ToDictionary(
+                                x => x.UserName.ToString().ToLower(),
+                                x => (Guid)x.Id
+                            );
+
+                    return userDict;
+                }
+               
+            }
+            catch (Exception ex) { 
+                _logger.Error(ex);
+                _parentForm.richTextBox1.AppendText($"❌ Lỗi get user: {ex.Message}\n");
+                return new Dictionary<string, Guid>();
+            }
+
         }
     }
 }

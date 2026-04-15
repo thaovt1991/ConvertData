@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 //SQL
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic.ApplicationServices;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
@@ -30,6 +31,7 @@ namespace ConvertData.WorkerConvert
         private Logger _logger;
         private ConnectionModel _connectModel;
         private IMongoCollection<PM_Projects> _pmProject_Collection;
+        private static Guid DefaultUserId = new("9B621C58-A5F6-F011-8D1E-54BF6477FBB6"); //default User
 
         //Contructor
         public ProjectConvert(Form1 parentForm, Logger logger, ConnectionModel connectModel)
@@ -70,27 +72,36 @@ namespace ConvertData.WorkerConvert
                 }
 
                 var listProjects = await _pmProject_Collection.Find(filter)
-                                            .Skip((parameterModel.Page -1) * parameterModel.PageSize)
+                                            .Skip((parameterModel.Page - 1) * parameterModel.PageSize)
                                           .Limit(parameterModel.PageSize).ToListAsync();
+
+                _parentForm.countPr.Text = (listProjects?.Count ?? 0).ToString();
+                _parentForm.convertSucPr.Text = "0";
 
                 if (listProjects.Count > 0)
                 {
                     _parentForm.richTextBox1.AppendText($"Tìm thấy {listProjects.Count} dự án {(!string.IsNullOrEmpty(startCreatedDate) ? "từ " + startCreatedDate + " " : "")}{(!string.IsNullOrEmpty(endCreatedDate) ? "đến " + endCreatedDate : "")}\n");
                     // Thực hiện tiếp logic convert dữ liệu ở đây...
                     //lấy danh sách AD User tương ứng
-                    var allUniqueUserNames = listProjects
-                                            .SelectMany(p => p.Permissions.Select(m => m.ObjectID?.ToString())
-                                            .Concat(listProjects.Select(p => p.CreatedBy)))                      
-                                            .Where(id => !string.IsNullOrEmpty(id))                           
-                                            .Distinct(StringComparer.OrdinalIgnoreCase)  // Lấy duy nhất, bất chấp hoa thường
-                                            .ToList();
-                    var dicUser = await GetInfoUsers(allUniqueUserNames);
+                    //var allUniqueUserNames = listProjects
+                    //                        .SelectMany(p => p.Permissions.Select(m => m.ObjectID?.ToString())
+                    //                        .Concat(listProjects.Select(p => p.CreatedBy)))                      
+                    //                        .Where(id => !string.IsNullOrEmpty(id))                           
+                    //                        .Distinct(StringComparer.OrdinalIgnoreCase)  // Lấy duy nhất, bất chấp hoa thường
+                    //                        .ToList();
+                    //var dicUser = await GetInfoUsers(allUniqueUserNames);
 
+                    var dicUser = await GetInfoUsers(null, true);//lấy all tolowcase
                     //Chạy
                     var i = 0;
+                    var countSuccess = 0;
                     IProgress<int> progress = new Progress<int>(value =>
                     {
                         _parentForm.prgStatusProject.Value = value; // Cập nhật thanh tiến trình
+                    });
+                    IProgress<string> countSuccessFunc = new Progress<string>(value =>
+                    {
+                        _parentForm.convertSucPr.Text = value;
                     });
                     // var bulkOps = new List<WriteModel<PM_Projects>>();
                     foreach (var item in listProjects)
@@ -104,13 +115,14 @@ namespace ConvertData.WorkerConvert
                             var updateFilter = Builders<PM_Projects>.Filter.Eq(x => x.Id, item.Id);
                             var updateDefinition = Builders<PM_Projects>.Update.Set(x => x.PortalStatus, "2");
                             await _pmProject_Collection.UpdateOneAsync(updateFilter, updateDefinition);
-
+                            countSuccess++;
                             // Thay vì update ngay, ta cho vào danh sách chờ
                             //var upsertModel = new UpdateOneModel<PM_Projects>(
                             //    Builders<PM_Projects>.Filter.Eq(x => x.Id, item.Id),
                             //    Builders<PM_Projects>.Update.Set(x => x.PortalStatus, "2")
                             //);
                             //bulkOps.Add(upsertModel);
+                            countSuccessFunc.Report(countSuccess.ToString());
                         }
 
                         i++;
@@ -138,24 +150,24 @@ namespace ConvertData.WorkerConvert
 
         }
         //Update sang SQL sever
-        private SQLProject MapToSQL(PM_Projects mongoItem, Dictionary<string,Guid> dic)
+        private SQLProject MapToSQL(PM_Projects mongoItem, Dictionary<string, Guid> dic)
         {
             var project = new SQLProject
             {
                 Id = Guid.NewGuid(),
-                Code = mongoItem.ProjectID ,
+                Code = mongoItem.ProjectID,
                 Name = mongoItem.ProjectName ?? "No Name",
                 // Description = mongoItem.Description,
                 StartDate = mongoItem.StartDate != null ? mongoItem.StartDate.Value : mongoItem.CreatedOn,
                 EndDate = mongoItem.FinishDate != null ? mongoItem.FinishDate.Value : null,
                 Status = ProjectStatus.New, // Mặc định là mới
                 ProjectType = ProjectType.UserCreated,
-                PriorityType = mongoItem.Priority == "1" ? PriorityType.Low : (mongoItem.Priority == "3"? PriorityType.Hight : PriorityType.Normal ),
+                PriorityType = mongoItem.Priority == "1" ? PriorityType.Low : (mongoItem.Priority == "3" ? PriorityType.Hight : PriorityType.Normal),
                 SortOrder = 1,
                 IsProgressAutoCalculated = true,
                 ProgressPercentage = (double)mongoItem.CompletedPct,
                 DefaultViewMode = ProjectViewMode.Kanban,
-                CreatedBy = Guid.Parse("A1B2C3D4-E5F6-7890-ABCD-1234567890AB"), // ID cố định hoặc lấy từ cấu hình
+                CreatedBy = DefaultUserId, // ID cố định hoặc lấy từ cấu hình
                 TaskDeletePermissionMask = TaskDeletePermission.ProjectManager | TaskDeletePermission.Creator,
                 DefaultKanbanGroupMode = KanbanGroupMode.Status,
                 Note = "DataConvert", //data chuyển đổi
@@ -165,14 +177,16 @@ namespace ConvertData.WorkerConvert
                 UpdatedDate = mongoItem.ModifiedOn,
             };
             //doc setting
-            var memberType = mongoItem.Settings.FirstOrDefault(x => x.FieldName == "MemberType")?.FieldValue;
-            if(!string.IsNullOrEmpty(memberType)) {
+            var memberType = mongoItem?.Settings?.FirstOrDefault(x => x.FieldName == "MemberType")?.FieldValue;
+            if (!string.IsNullOrEmpty(memberType))
+            {
                 switch (memberType)
                 {
                     //4 5 cho trung 1
                     case "1":
                     case "4":
-                    case "5": project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
+                    case "5":
+                        project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
                         break;
                     case "2":
                         project.ProjectAccessScope = ProjectMemberScope.Company;
@@ -180,26 +194,36 @@ namespace ConvertData.WorkerConvert
                     case "3":
                         project.ProjectAccessScope = ProjectMemberScope.Everyone;
                         break;
-                    //case "4":
-                    //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
-                    //    break;
-                    //case "5":
-                    //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
-                    //    break;
+                        //case "4":
+                        //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
+                        //    break;
+                        //case "5":
+                        //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
+                        //    break;
                 }
             }
 
-            if (dic.ContainsKey(mongoItem.CreatedBy.ToLower()) && dic.TryGetValue(mongoItem.CreatedBy.ToLower(),out var createdBy))
+            var createdByID = mongoItem.CreatedBy.ToLower();
+            var createdBy = DefaultUserId;
+            if (dic.ContainsKey(createdByID) && dic.TryGetValue(createdByID, out createdBy))
             {
                 project.CreatedBy = createdBy;
+            }
+            else
+            {
+                createdByID = $@"pvoil\{createdByID}";
+                if (dic.ContainsKey(createdByID) && dic.TryGetValue(createdByID, out createdBy))
+                {
+                    project.CreatedBy = createdBy;
+                }
             }
 
             return project;
         }
-         
-      
 
-        public async Task<bool> AddProjectToSQLServer(PM_Projects item, Dictionary<string,Guid> dicUsers)
+
+
+        public async Task<bool> AddProjectToSQLServer(PM_Projects item, Dictionary<string, Guid> dicUsers)
         {
             using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
             {
@@ -234,7 +258,7 @@ namespace ConvertData.WorkerConvert
                     var result = rowsAffected > 0;
                     if (result)
                     {
-                        result = await UpdateMembersProject(item, project.Id,dicUsers);
+                        result = await UpdateMembersProject(item, project.Id, dicUsers);
                     }
 
                     return result;
@@ -250,9 +274,19 @@ namespace ConvertData.WorkerConvert
         private async Task<bool> UpdateMembersProject(PM_Projects mogoItem, Guid projectId, Dictionary<string, Guid> dic)
         {
             var sqlMembers = new List<SQLProjectMember>();
+            if (mogoItem?.Permissions == null || mogoItem?.Permissions?.Count == 0) return true;
             var i = 0;
-            foreach (var member in mogoItem?.Permissions)
+            foreach (var member in mogoItem.Permissions)
             {
+                var objectID = member?.ObjectID?.ToLower();
+                if(string.IsNullOrEmpty(objectID)) continue;
+                if (!dic.TryGetValue(objectID, out var memberID) &&
+                    !dic.TryGetValue($@"pvoil\{objectID}", out memberID))
+                {
+                    _parentForm.richTextBox1.AppendText($"⚠️ Bỏ qua: Không tìm thấy User {objectID}\n");
+                    continue;
+                }
+                  
 
                 var projectMb = new SQLProjectMember()
                 {
@@ -260,23 +294,22 @@ namespace ConvertData.WorkerConvert
                     ProjectId = projectId,
                     ProjectMemberType = member.RoleType == "PM" ? 1 : (member.RoleType == "S" ? 3 : 2),
                     SortOrder = i,
-                    CreatedBy = Guid.Parse("A1B2C3D4-E5F6-7890-ABCD-1234567890AB"), // ID cố định hoặc lấy từ cấu hình
-                    MemberId = Guid.NewGuid(), //tạo ảo sau này máp với User
+                    CreatedBy = DefaultUserId, // ID cố định hoặc lấy từ cấu hình
+                    MemberId = memberID,
                     ActiveFlag = 0,
                     CreatedDate = member.CreatedOn > DateTime.MinValue ? member.CreatedOn : mogoItem.CreatedOn,
                 };
-                if (dic.ContainsKey(member.ObjectID.ToLower()) && dic.TryGetValue(member.ObjectID.ToLower(), out var memberID))
-                {
-                    projectMb.MemberId = memberID;
-                }
+
+
                 var createdBy = mogoItem.CreatedBy.ToLower();
-                if (dic.ContainsKey(createdBy) && dic.TryGetValue(createdBy, out var createdByID))
+                if (dic.TryGetValue(createdBy, out var createdByID) ||
+                    dic.TryGetValue($@"pvoil\{createdBy}", out createdByID))
                 {
                     projectMb.CreatedBy = createdByID;
                 }
 
                 i++;
-               sqlMembers.Add(projectMb);
+                sqlMembers.Add(projectMb);
             }
             if (sqlMembers.Any())
             {
@@ -296,7 +329,7 @@ namespace ConvertData.WorkerConvert
                     {
                         await db.ExecuteAsync(insertSql, sqlMembers);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _parentForm.richTextBox1.AppendText($"❌ Lỗi SQL Insert Member: {ex.Message}\n");
                         return false;
@@ -306,29 +339,55 @@ namespace ConvertData.WorkerConvert
             return true;
         }
 
-        public async Task<Dictionary<string,Guid>> GetInfoUsers(List<string> listUserIDs)
+        public async Task<Dictionary<string, Guid>> GetInfoUsers(List<string> listUserIDs = null, bool isLowerCase = false)
         {
-            if (listUserIDs == null || listUserIDs?.Count == 0) return new Dictionary<string, Guid>();
+
             try
             {
                 using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
                 {
-                    string sql = @"
+                    IEnumerable<SQLCoreUserBase> usersAll = new List<SQLCoreUserBase>();
+
+                    if (listUserIDs?.Count > 0)
+                    {
+                        //lấy theo danh sách
+                        string sql = @"
                         SELECT Id, UserName 
                         FROM [core].[Users] 
                         WHERE LOWER(UserName) IN @UserNames";
+                        usersAll = await db.QueryAsync<SQLCoreUserBase>(sql, new { UserNames = listUserIDs });
+                    }
+                    else
+                    {
+                        //lấy all
+                        string sql = @"SELECT Id, UserName FROM core.Users WHERE UserName IS NOT NULL";
+                        usersAll = await db.QueryAsync<SQLCoreUserBase>(sql, commandTimeout: 30);
+                    }
 
-                    var usersAll = await db.QueryAsync<SQLCoreUserBase>(sql, new { UserNames = listUserIDs });
-                    var userDict = usersAll.ToDictionary(
-                                x => x.UserName.ToString().ToLower(),
-                                x => (Guid)x.Id
-                            );
+                    if (isLowerCase)
+                    {
+                        return usersAll
+                             .DistinctBy(x => x.UserName)
+                             .ToDictionary(
+                               x => x.UserName.ToString().ToLower(),
+                               x => (Guid)x.Id
+                           );
+                    }
+                    else
+                    {
+                        return usersAll
+                             .DistinctBy(x => x.UserName)
+                             .ToDictionary(
+                               x => x.UserName.ToString(),
+                               x => (Guid)x.Id
+                           );
+                    }
 
-                    return userDict;
                 }
-               
+
             }
-            catch (Exception ex) { 
+            catch (Exception ex)
+            {
                 _logger.Error(ex);
                 _parentForm.richTextBox1.AppendText($"❌ Lỗi get user: {ex.Message}\n");
                 return new Dictionary<string, Guid>();

@@ -10,10 +10,10 @@ namespace ConvertData.Model.ModelSQL
     public class SQLCoreUserBase
     {
         public Guid Id { get; set; }
-        public Guid UserName { get; set; }
+        public string UserName { get; set; }
     }
     public class SQLCoreUser : SQLCoreUserBase
     {
-        public Guid FullName { get; set; }
+        public string FullName { get; set; }
     }
 }

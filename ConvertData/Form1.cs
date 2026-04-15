@@ -361,14 +361,17 @@ namespace ConverData
             var parameterModel = new ParameterModel()
             {
                 Page = !string.IsNullOrEmpty(numericPage.Text) ? Int32.Parse(numericPage.Text) : 1,
-                PageSize = !string.IsNullOrEmpty(numericPageSize.Text) ? Int32.Parse(numericPageSize.Text) : 100
+                PageSize = !string.IsNullOrEmpty(numericPageSize.Text) ? Int32.Parse(numericPageSize.Text) : 100,
+                StartCreatedDate = dateTimePicker1.Value.ToString(),
+                EndCreatedDate = dateTimePicker2.Value.ToString()
             };
+
             var coverter = await new ProjectConvert(this, _logger, connectModel).ConvertDataProject(parameterModel);
 
             //Test
 
             bttConvertProject.Enabled = true;
-            richTextBox1.AppendText("Đồng bộ dự án hoàn tất!");
+            richTextBox1.AppendText("Đồng bộ dự án hoàn tất! \n");
 
         }
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -381,29 +384,10 @@ namespace ConverData
         }
         #endregion
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void textBox3_TextChanged_1(object sender, EventArgs e)
         {
             _databaseName = databaseName.Text;
         }
 
-        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dateTimePicker3_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

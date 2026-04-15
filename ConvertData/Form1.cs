@@ -343,7 +343,7 @@ namespace ConverData
 
             //Test
 
-            bttConvertProject.Enabled = true;
+            bttConvertTask.Enabled = true;
             richTextBox1.AppendText("Đồng bộ công việc hoàn tất! \n");
             //MessageBox.Show("Đồng bộ hoàn tất!");
         }

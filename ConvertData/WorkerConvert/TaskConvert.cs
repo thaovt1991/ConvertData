@@ -154,11 +154,11 @@ namespace ConvertData.WorkerConvert
                     string sql = @"
                                 DELETE FROM qlcv.Tasks WHERE Code = @Code;   --//Xóa cũ 
 
-                                INSERT INTO qlcv.Projects (
+                                INSERT INTO qlcv.Tasks(
                                    Id,ProjectId ,ParentId,RecurringSourceId,Code,Name,Description
                                   ,Status,Path,SortOrder,AssignBy,RepeatInterval,StartDate,DueDate,EndDate
                                   ,IsReport,RepeatType,Level
-                                  ,CompletePercent,ActiveFlag ,CreatedBy,UpdatedBy ,RowVersion 
+                                  ,CompletePercent,ActiveFlag ,CreatedBy,UpdatedBy
                                   ,CreatedDate,UpdatedDate,Checklist,RepeatCount,RepeatEndDate
                                   ,Category,IsRecurring,ReviewPercent,PriorityType,MigratedFromId
                                 ) 
@@ -166,7 +166,7 @@ namespace ConvertData.WorkerConvert
                                     @Id,@ProjectId,@ParentId,@RecurringSourceId,@Code,@Name,@Description
                                     ,@Status,@Path,@SortOrder,@AssignBy,@RepeatInterval,@StartDate,@DueDate,@EndDate
                                     ,@IsReport,@RepeatType,@Level
-                                    ,@CompletePercent,@ActiveFlag ,@CreatedBy,@UpdatedBy ,@RowVersion 
+                                    ,@CompletePercent,@ActiveFlag ,@CreatedBy,@UpdatedBy
                                     ,@CreatedDate,@UpdatedDate,@Checklist,@RepeatCount,@RepeatEndDate
                                     ,@Category,@IsRecurring,@ReviewPercent,@PriorityType,@MigratedFromId
                                     )";
@@ -215,7 +215,7 @@ namespace ConvertData.WorkerConvert
                 IsRecurring = false,
                 RepeatType = 0,
                 PriorityType = task.Priority == "1" ? PriorityType.Low : (task.Priority == "3" ? PriorityType.Hight : PriorityType.Normal),
-                CreatedDate = task.CreatedOn
+                CreatedDate = task.CreatedOn,        
             };
 
             //TaskGoals
@@ -284,14 +284,42 @@ namespace ConvertData.WorkerConvert
             if (!string.IsNullOrEmpty(task.ModifiedBy))
             {
                 var modifiedBy = task.ModifiedBy?.ToLower() ?? "";
-                if (dicUsers.TryGetValue(createdBy, out var modifineBy) ||
-                    dicUsers.TryGetValue($@"pvoil\{createdBy}", out modifineBy))
+                if (dicUsers.TryGetValue(modifiedBy, out var modifineBy) ||
+                    dicUsers.TryGetValue($@"pvoil\{modifiedBy}", out modifineBy))
                 {
                     taskSQL.UpdatedBy = modifineBy;
                 }
             }
 
+            if(string.IsNullOrEmpty(task.AssignBy) || task.AssignBy == task.CreatedBy)
+            {
+                taskSQL.AssignBy = taskSQL.CreatedBy;
+            }
+            else
+            {
+                var assignBy = task.AssignBy?.ToLower() ?? "";
+                if (dicUsers.TryGetValue(assignBy, out var assignByID) ||
+                    dicUsers.TryGetValue($@"pvoil\{assignBy}", out assignByID))
+                {
+                    taskSQL.AssignBy = assignByID;
+                }
+            }
+            
+
             //Kho nhat la parentID
+            if (string.IsNullOrEmpty(task.ParentID))
+            {
+                taskSQL.Path = task.RecID.ToString();
+            }
+            else if (!string.IsNullOrEmpty(task.ParentList))
+            {
+                var parentList = task.ParentList.Replace(";", "\\");
+                taskSQL.Path = $@"{parentList}\{task.RecID.ToString()}";
+            }
+            else
+            {
+                //tu tính
+            }
 
             return taskSQL;
         }

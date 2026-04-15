@@ -225,7 +225,7 @@ namespace ConvertData.Model.ModelMongo
         public string RepeatTmp { get; set; }
         public string RepeatConfig { get; set; }
         public string RepeatEnd { get; set; }
-
+        public string RefFunctionID { get; set; }
         // ve chart cho nhanh
         //[NotMapped]
         public string PerStatus { get; set; } //tr?ng thái công vi?c-h? tr? v? chart cho nhanh
@@ -234,6 +234,26 @@ namespace ConvertData.Model.ModelMongo
         public string ImportFrom { get; set; } // "sqlsvr", // 2 field này cần thống nhất với Thương trước khi sử dụng
         public string MapID { get; set; } // 2 field này cần thống nhất với Thương trước khi sử dụng
         public int? ImportStatus { get; set; } // Trạng thái import dữ liệu: bit-1: AttachFile; bit-2: History
+
+        public List<TM_History> History { get; set; }
+        /// <summary>
+        /// Column: TM_Sprints.IterationID
+        /// </summary>
+        [ForeignKey("IterationID")]
+        public TM_Sprints TM_Sprints { get; set; } //biến rác phải có để chuyển chứ nó ko có tích sự gì
+        //
+        public string CreatedByName { get; set; }
+        public string EmployeeName { get; set; }
+        public string PositionName { get; set; }
+        public string OrgUnitName { get; set; }
+        public string DepartmentName { get; set; }
+        public string DivisionName { get; set; }
+        public string CompanyName { get; set; }
+        public string FullTextSearch { get; set; }
+        public string IndexMeta { get; set; }
+        public string IndexContain { get; set; }
+        public string DW { get; set; } //- bien de biet có data Fact
+        public string DocID { get; set; } //ds file ;
     }
 
     public class TM_Permissions
@@ -385,12 +405,6 @@ namespace ConvertData.Model.ModelMongo
         public string PositionID { get; set; }
         public string OrgUnitID { get; set; }
         public string DivisionID { get; set; }
-
-        /// <summary>
-        /// Column: TM_Sprints.IterationID
-        /// </summary>
-        [ForeignKey("IterationID")]
-        public TM_Sprints TM_Sprints { get; set; }
     }
 
     public class TM_TaskGroups
@@ -509,5 +523,18 @@ namespace ConvertData.Model.ModelMongo
         public string PositionID { get; set; }
         public string OrgUnitID { get; set; }
         public string DivisionID { get; set; }
+    }
+
+    public class TM_History
+    {
+        //RoleType ; UserID; UserName; PositionName; OrgUnitName ; Comment; Percentage ; LastUpdate
+        public string RoleType { get; set; }
+        public string UserID { get; set; }
+        public string UserName { get; set; }
+        public string PositionName { get; set; }
+        public string OrgUnitName { get; set; }
+        public string Comment { get; set; }
+        public decimal Percentage { get; set; }
+        public DateTime? LastUpdate { get; set; }
     }
 }

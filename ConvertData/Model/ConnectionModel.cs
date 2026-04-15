@@ -24,4 +24,11 @@ namespace ConvertData.Model
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 20;
     }
+
+    public class ParameterModelTask : ParameterModel
+    {
+        public bool IsUpdateFull { get; set; } = true;
+        public bool IsUpdateTask { get; set; } = true;
+        public bool IsUpdateTaskRes { get; set; } = true;
+    }
 }

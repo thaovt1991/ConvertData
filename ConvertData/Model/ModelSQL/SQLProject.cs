@@ -8,13 +8,22 @@ using System.Threading.Tasks;
 
 namespace ConvertData.Model.ModelSQL
 {
-    public class SQLProject
+
+    public class SQLProjectBase
     {
         public Guid Id { get; set; }
         /// <summary>
         /// Mã dự án
         /// </summary>
         public string Code { get; set; }
+    }
+    public class SQLProject : SQLProjectBase
+    {
+        //public Guid Id { get; set; }
+        ///// <summary>
+        ///// Mã dự án
+        ///// </summary>
+        //public string Code { get; set; }
 
         /// <summary>
         /// Tên dự án
@@ -40,7 +49,7 @@ namespace ConvertData.Model.ModelSQL
         /// Trạng thái dự án
         /// 1-New, 2-Processing, 3-Completed, 4-Closed, 5-Archived, 6-OnHold, 7-Cancelled
         /// </summary>
-        public ProjectStatus Status { get; set; } = ProjectStatus.New;
+        public byte Status { get; set; } //= ProjectStatus.New; //Cũ có 1 đến 4
 
         /// <summary>
         /// Loại dự án

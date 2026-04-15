@@ -13,7 +13,7 @@ namespace ConvertData.Model.ModelMongo
     //[BsonCollection("TM_Tasks")]
     public class TM_Tasks : ParentEntity
     {
-        public string RecID { get; set; } //Guid
+        public Guid RecID { get; set; } //Guid
 
         public string TaskID { get; set; }
 
@@ -230,7 +230,7 @@ namespace ConvertData.Model.ModelMongo
         //[NotMapped]
         public string PerStatus { get; set; } //tr?ng thái công vi?c-h? tr? v? chart cho nhanh
 
-        // 2 field này dành cho việc mapping data import từ SurePortal sang Codx
+        // 2 field này dành cho việc mapping data import từ SurePortal sang Codx - gio sài để máp pvoid
         public string ImportFrom { get; set; } // "sqlsvr", // 2 field này cần thống nhất với Thương trước khi sử dụng
         public string MapID { get; set; } // 2 field này cần thống nhất với Thương trước khi sử dụng
         public int? ImportStatus { get; set; } // Trạng thái import dữ liệu: bit-1: AttachFile; bit-2: History
@@ -385,6 +385,12 @@ namespace ConvertData.Model.ModelMongo
         public string PositionID { get; set; }
         public string OrgUnitID { get; set; }
         public string DivisionID { get; set; }
+
+        /// <summary>
+        /// Column: TM_Sprints.IterationID
+        /// </summary>
+        [ForeignKey("IterationID")]
+        public TM_Sprints TM_Sprints { get; set; }
     }
 
     public class TM_TaskGroups
@@ -457,5 +463,51 @@ namespace ConvertData.Model.ModelMongo
         public string ProjectID { get; set; }
         public string Members { get; set; }
         public decimal? Percentage { get; set; }
+    }
+    public class TM_Sprints
+    {
+        [Key]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        public string IterationID { get; set; }
+        public string IterationType { get; set; }
+        public string IterationName { get; set; }
+        public string Interval { get; set; }
+
+        public short? Year { get; set; }
+
+        public short? Month { get; set; }
+
+        public short? Week { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string Memo { get; set; }
+        public string Status { get; set; }
+        public string AreaID { get; set; }
+        public string ProjectID { get; set; }
+        public string Resources { get; set; }
+        public string ViewMode { get; set; }
+        public string ViewTemplate { get; set; }
+        public bool IsShared { get; set; }
+        public string Owner { get; set; }
+        public string BUID { get; set; }
+        public string Note { get; set; }
+
+        public List<Permission> Permissions { get; set; }
+        public bool Closed { get; set; }
+        public DateTime? ClosedOn { get; set; }
+        public string ClosedBy { get; set; }
+
+        public int? Attachments { get; set; }
+
+        public int? Comments { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+        public string ModifiedBy { get; set; }
+        public string EmployeeID { get; set; }
+        public string PositionID { get; set; }
+        public string OrgUnitID { get; set; }
+        public string DivisionID { get; set; }
     }
 }

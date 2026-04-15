@@ -43,8 +43,12 @@
             bttConnectMG = new Button();
             richTextBox1 = new RichTextBox();
             tabTasks = new TabPage();
-            numericUpDown1 = new NumericUpDown();
-            numericUpDown2 = new NumericUpDown();
+            convertSucTask = new Label();
+            countTask = new Label();
+            label18 = new Label();
+            label19 = new Label();
+            numericPageSizeTM = new NumericUpDown();
+            numericPageTM = new NumericUpDown();
             label12 = new Label();
             label13 = new Label();
             label11 = new Label();
@@ -55,6 +59,10 @@
             prgStatusTask = new ProgressBar();
             bttConvertTask = new Button();
             tabProject = new TabPage();
+            convertSucPr = new Label();
+            countPr = new Label();
+            label15 = new Label();
+            label14 = new Label();
             label9 = new Label();
             dateTimePicker2 = new DateTimePicker();
             label8 = new Label();
@@ -66,15 +74,11 @@
             label4 = new Label();
             prgStatusProject = new ProgressBar();
             tabTable = new TabControl();
-            label14 = new Label();
-            label15 = new Label();
-            countPr = new Label();
-            convertSucPr = new Label();
             nguon_du_lieu.SuspendLayout();
             groupBox1.SuspendLayout();
             tabTasks.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageSizeTM).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageTM).BeginInit();
             tabProject.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericPageSize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericPage).BeginInit();
@@ -224,8 +228,12 @@
             // 
             // tabTasks
             // 
-            tabTasks.Controls.Add(numericUpDown1);
-            tabTasks.Controls.Add(numericUpDown2);
+            tabTasks.Controls.Add(convertSucTask);
+            tabTasks.Controls.Add(countTask);
+            tabTasks.Controls.Add(label18);
+            tabTasks.Controls.Add(label19);
+            tabTasks.Controls.Add(numericPageSizeTM);
+            tabTasks.Controls.Add(numericPageTM);
             tabTasks.Controls.Add(label12);
             tabTasks.Controls.Add(label13);
             tabTasks.Controls.Add(label11);
@@ -243,24 +251,62 @@
             tabTasks.Text = "Quản lý công việc";
             tabTasks.UseVisualStyleBackColor = true;
             // 
-            // numericUpDown1
+            // convertSucTask
             // 
-            numericUpDown1.Location = new Point(81, 86);
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(117, 23);
-            numericUpDown1.TabIndex = 19;
+            convertSucTask.AutoSize = true;
+            convertSucTask.FlatStyle = FlatStyle.Popup;
+            convertSucTask.ForeColor = Color.Blue;
+            convertSucTask.Location = new Point(493, 181);
+            convertSucTask.Name = "convertSucTask";
+            convertSucTask.Size = new Size(13, 15);
+            convertSucTask.TabIndex = 23;
+            convertSucTask.Text = "0";
             // 
-            // numericUpDown2
+            // countTask
             // 
-            numericUpDown2.Location = new Point(81, 43);
-            numericUpDown2.Name = "numericUpDown2";
-            numericUpDown2.Size = new Size(117, 23);
-            numericUpDown2.TabIndex = 18;
+            countTask.AutoSize = true;
+            countTask.Location = new Point(229, 181);
+            countTask.Name = "countTask";
+            countTask.Size = new Size(13, 15);
+            countTask.TabIndex = 22;
+            countTask.Text = "0";
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.Location = new Point(364, 181);
+            label18.Name = "label18";
+            label18.Size = new Size(123, 15);
+            label18.TabIndex = 21;
+            label18.Text = "Đồng bộ thành công: ";
+            // 
+            // label19
+            // 
+            label19.AutoSize = true;
+            label19.Location = new Point(153, 181);
+            label19.Name = "label19";
+            label19.Size = new Size(70, 15);
+            label19.TabIndex = 20;
+            label19.Text = "Tổng cộng :";
+            // 
+            // numericPageSizeTM
+            // 
+            numericPageSizeTM.Location = new Point(81, 67);
+            numericPageSizeTM.Name = "numericPageSizeTM";
+            numericPageSizeTM.Size = new Size(117, 23);
+            numericPageSizeTM.TabIndex = 19;
+            // 
+            // numericPageTM
+            // 
+            numericPageTM.Location = new Point(81, 24);
+            numericPageTM.Name = "numericPageTM";
+            numericPageTM.Size = new Size(117, 23);
+            numericPageTM.TabIndex = 18;
             // 
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new Point(15, 88);
+            label12.Location = new Point(11, 69);
             label12.Name = "label12";
             label12.Size = new Size(53, 15);
             label12.TabIndex = 17;
@@ -269,7 +315,7 @@
             // label13
             // 
             label13.AutoSize = true;
-            label13.Location = new Point(15, 43);
+            label13.Location = new Point(15, 26);
             label13.Name = "label13";
             label13.Size = new Size(33, 15);
             label13.TabIndex = 16;
@@ -278,7 +324,7 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new Point(215, 88);
+            label11.Location = new Point(219, 69);
             label11.Name = "label11";
             label11.Size = new Size(54, 15);
             label11.TabIndex = 15;
@@ -288,7 +334,7 @@
             // 
             dateTimePicker4.CustomFormat = "dd/MM/yyyy";
             dateTimePicker4.Format = DateTimePickerFormat.Custom;
-            dateTimePicker4.Location = new Point(291, 86);
+            dateTimePicker4.Location = new Point(281, 69);
             dateTimePicker4.Margin = new Padding(3, 2, 3, 2);
             dateTimePicker4.Name = "dateTimePicker4";
             dateTimePicker4.Size = new Size(225, 23);
@@ -297,7 +343,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(220, 44);
+            label10.Location = new Point(215, 26);
             label10.Name = "label10";
             label10.Size = new Size(58, 15);
             label10.TabIndex = 13;
@@ -307,7 +353,7 @@
             // 
             dateTimePicker3.CustomFormat = "dd/MM/yyyy";
             dateTimePicker3.Format = DateTimePickerFormat.Custom;
-            dateTimePicker3.Location = new Point(291, 46);
+            dateTimePicker3.Location = new Point(281, 20);
             dateTimePicker3.Margin = new Padding(3, 2, 3, 2);
             dateTimePicker3.Name = "dateTimePicker3";
             dateTimePicker3.Size = new Size(225, 23);
@@ -364,6 +410,44 @@
             tabProject.TabIndex = 0;
             tabProject.Text = "Quản lý dự án";
             tabProject.UseVisualStyleBackColor = true;
+            // 
+            // convertSucPr
+            // 
+            convertSucPr.AutoSize = true;
+            convertSucPr.FlatStyle = FlatStyle.Popup;
+            convertSucPr.ForeColor = Color.Blue;
+            convertSucPr.Location = new Point(492, 178);
+            convertSucPr.Name = "convertSucPr";
+            convertSucPr.Size = new Size(13, 15);
+            convertSucPr.TabIndex = 17;
+            convertSucPr.Text = "0";
+            // 
+            // countPr
+            // 
+            countPr.AutoSize = true;
+            countPr.Location = new Point(228, 178);
+            countPr.Name = "countPr";
+            countPr.Size = new Size(13, 15);
+            countPr.TabIndex = 16;
+            countPr.Text = "0";
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new Point(363, 178);
+            label15.Name = "label15";
+            label15.Size = new Size(123, 15);
+            label15.TabIndex = 15;
+            label15.Text = "Đồng bộ thành công: ";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new Point(152, 178);
+            label14.Name = "label14";
+            label14.Size = new Size(70, 15);
+            label14.TabIndex = 14;
+            label14.Text = "Tổng cộng :";
             // 
             // label9
             // 
@@ -461,44 +545,6 @@
             tabTable.Size = new Size(802, 264);
             tabTable.TabIndex = 3;
             // 
-            // label14
-            // 
-            label14.AutoSize = true;
-            label14.Location = new Point(152, 178);
-            label14.Name = "label14";
-            label14.Size = new Size(70, 15);
-            label14.TabIndex = 14;
-            label14.Text = "Tổng cộng :";
-            // 
-            // label15
-            // 
-            label15.AutoSize = true;
-            label15.Location = new Point(363, 178);
-            label15.Name = "label15";
-            label15.Size = new Size(123, 15);
-            label15.TabIndex = 15;
-            label15.Text = "Đồng bộ thành công: ";
-            // 
-            // countPr
-            // 
-            countPr.AutoSize = true;
-            countPr.Location = new Point(216, 178);
-            countPr.Name = "countPr";
-            countPr.Size = new Size(13, 15);
-            countPr.TabIndex = 16;
-            countPr.Text = "0";
-            // 
-            // convertSucPr
-            // 
-            convertSucPr.AutoSize = true;
-            convertSucPr.FlatStyle = FlatStyle.Popup;
-            convertSucPr.ForeColor = Color.Blue;
-            convertSucPr.Location = new Point(483, 179);
-            convertSucPr.Name = "convertSucPr";
-            convertSucPr.Size = new Size(13, 15);
-            convertSucPr.TabIndex = 17;
-            convertSucPr.Text = "0";
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -520,8 +566,8 @@
             groupBox1.PerformLayout();
             tabTasks.ResumeLayout(false);
             tabTasks.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageSizeTM).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageTM).EndInit();
             tabProject.ResumeLayout(false);
             tabProject.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numericPageSize).EndInit();
@@ -564,8 +610,8 @@
         private DateTimePicker dateTimePicker2;
         private Label label10;
         private DateTimePicker dateTimePicker3;
-        private NumericUpDown numericUpDown1;
-        private NumericUpDown numericUpDown2;
+        private NumericUpDown numericPageSizeTM;
+        private NumericUpDown numericPageTM;
         private Label label12;
         private Label label13;
         private Label label11;
@@ -574,5 +620,9 @@
         public Label countPr;
         private Label label15;
         private Label label14;
+        public Label convertSucTask;
+        public Label countTask;
+        private Label label18;
+        private Label label19;
     }
 }

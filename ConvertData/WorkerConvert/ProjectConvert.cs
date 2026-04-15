@@ -160,11 +160,11 @@ namespace ConvertData.WorkerConvert
                 // Description = mongoItem.Description,
                 StartDate = mongoItem.StartDate != null ? mongoItem.StartDate.Value : mongoItem.CreatedOn,
                 EndDate = mongoItem.FinishDate != null ? mongoItem.FinishDate.Value : null,
-                Status = ProjectStatus.New, // Mặc định là mới
-                ProjectType = ProjectType.UserCreated,
+                Status = byte.TryParse(mongoItem.Status, out byte s) ? s : (byte)1,// Mặc định là mới
+                ProjectType = !string.IsNullOrEmpty(mongoItem.RefNo) ? ProjectType.External :  ProjectType.UserCreated,
                 PriorityType = mongoItem.Priority == "1" ? PriorityType.Low : (mongoItem.Priority == "3" ? PriorityType.Hight : PriorityType.Normal),
                 SortOrder = 1,
-                IsProgressAutoCalculated = true,
+                IsProgressAutoCalculated = false,
                 ProgressPercentage = (double)mongoItem.CompletedPct,
                 DefaultViewMode = ProjectViewMode.Kanban,
                 CreatedBy = DefaultUserId, // ID cố định hoặc lấy từ cấu hình
@@ -175,47 +175,58 @@ namespace ConvertData.WorkerConvert
                 ProjectAccessScope = ProjectMemberScope.ProjectMembers,
                 CreatedDate = mongoItem.CreatedOn,
                 UpdatedDate = mongoItem.ModifiedOn,
+                AllowTaskDeadlineExtension = false,
             };
             //doc setting
-            var memberType = mongoItem?.Settings?.FirstOrDefault(x => x.FieldName == "MemberType")?.FieldValue;
-            if (!string.IsNullOrEmpty(memberType))
+            if (mongoItem?.Settings?.Count > 0)
             {
-                switch (memberType)
+                foreach (var st in mongoItem.Settings)
                 {
-                    //4 5 cho trung 1
-                    case "1":
-                    case "4":
-                    case "5":
-                        project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
-                        break;
-                    case "2":
-                        project.ProjectAccessScope = ProjectMemberScope.Company;
-                        break;
-                    case "3":
-                        project.ProjectAccessScope = ProjectMemberScope.Everyone;
-                        break;
-                        //case "4":
-                        //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
-                        //    break;
-                        //case "5":
-                        //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
-                        //    break;
+                    switch (st.FieldName)
+                    {
+                        case "MemberType":
+                            if (!string.IsNullOrEmpty(st.FieldValue))
+                            {
+                                switch (st.FieldValue)
+                                {
+                                    //4 5 cho trung 1
+                                    case "1":
+                                    case "4":
+                                    case "5":
+                                        project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
+                                        break;
+                                    case "2":
+                                        project.ProjectAccessScope = ProjectMemberScope.Company;
+                                        break;
+                                    case "3":
+                                        project.ProjectAccessScope = ProjectMemberScope.Everyone;
+                                        break;
+                                        //case "4":
+                                        //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
+                                        //    break;
+                                        //case "5":
+                                        //    project.ProjectAccessScope = ProjectMemberScope.ProjectMembers;
+                                        //    break;
+                                }
+                            }
+                            break;
+                        case "AutoUpdateProgress":
+                            project.IsProgressAutoCalculated = st.FieldValue == "1";
+                            break;
+                        case "ExtendControl":
+                            project.AllowTaskDeadlineExtension = st.FieldValue == "1";
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
-            var createdByID = mongoItem.CreatedBy.ToLower();
-            var createdBy = DefaultUserId;
-            if (dic.ContainsKey(createdByID) && dic.TryGetValue(createdByID, out createdBy))
+            var createdBy = mongoItem.CreatedBy?.ToLower() ??"";
+            if (dic.TryGetValue(createdBy, out var createdByID) ||
+                dic.TryGetValue($@"pvoil\{createdBy}", out createdByID))
             {
-                project.CreatedBy = createdBy;
-            }
-            else
-            {
-                createdByID = $@"pvoil\{createdByID}";
-                if (dic.ContainsKey(createdByID) && dic.TryGetValue(createdByID, out createdBy))
-                {
-                    project.CreatedBy = createdBy;
-                }
+                project.CreatedBy = createdByID;
             }
 
             return project;
@@ -225,11 +236,10 @@ namespace ConvertData.WorkerConvert
 
         public async Task<bool> AddProjectToSQLServer(PM_Projects item, Dictionary<string, Guid> dicUsers)
         {
+            SQLProject project = MapToSQL(item, dicUsers);
+            //Conver
             using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
             {
-                SQLProject project = MapToSQL(item, dicUsers);
-                //Conver
-
                 string sql = @"
                                 DELETE FROM qlcv.Projects WHERE Code = @Code;   --//Xóa cũ 
 

@@ -54,6 +54,13 @@ namespace ConverData
             //// Đối với DateTimePicker kết thúc
             //dateTimePicker2.Format = DateTimePickerFormat.Custom;
             //dateTimePicker2.CustomFormat = "dd/MM/yyyy";
+            //tASK
+            numericPageTM.Value = 1;
+            numericPageTM.Minimum = 1;
+            //numericPageTM.Maximum = 1000;   // Tối đa 1000 dòng để tránh treo ram
+            numericPageSizeTM.Minimum = 1;
+            numericPageSizeTM.Maximum = 20000;   // Tối đa 20000 dòng để tránh treo ram
+            numericPageSizeTM.Value = 1; // 1000;  //t
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -312,16 +319,32 @@ namespace ConverData
         private async void bttConvertTask_ClickAsync(object sender, EventArgs e)
         {
             bttConvertTask.Enabled = false;
-            var progress = new Progress<int>(value =>
-            {
-                prgStatusTask.Value = value; // Cập nhật thanh tiến trình
-            });
+
             prgStatusTask.Value = 0;
 
-            await Task.Run(() => StartSyncData(progress));
+            var connectModel = new ConnectionModel()
+            {
+                ConnectionStringMG = this.ConnectStringOut,
+                ConnectionStringSQL = this.ConnectStringIn,
+                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+            };
+            var parameterModel = new ParameterModelTask()
+            {
+                Page = !string.IsNullOrEmpty(numericPage.Text) ? Int32.Parse(numericPage.Text) : 1,
+                PageSize = !string.IsNullOrEmpty(numericPageSize.Text) ? Int32.Parse(numericPageSize.Text) : 100,
+                StartCreatedDate = dateTimePicker3.Value.ToString(),
+                EndCreatedDate = dateTimePicker4.Value.ToString(),
+                IsUpdateFull = true,
+                IsUpdateTask = true,
+                IsUpdateTaskRes = true
+            };
 
-            bttConvertTask.Enabled = true;
-            richTextBox1.AppendText("Đồng bộ công việc hoàn tất!");
+            var coverter = await new TaskConvert(this, _logger, connectModel).ConvertDataTasks(parameterModel);
+
+            //Test
+
+            bttConvertProject.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ công việc hoàn tất! \n");
             //MessageBox.Show("Đồng bộ hoàn tất!");
         }
 
@@ -346,11 +369,11 @@ namespace ConverData
         {
             bttConvertProject.Enabled = false;
             //Xử lý nghiệp vụ đồng bộ
-            var progress = new Progress<int>(value =>
-            {
-                prgStatusTask.Value = value; // Cập nhật thanh tiến trình
-            });
-            prgStatusTask.Value = 0;
+            //var progress = new Progress<int>(value =>
+            //{
+            //    prgStatusTask.Value = value; // Cập nhật thanh tiến trình
+            //});
+            prgStatusProject.Value = 0;
 
             var connectModel = new ConnectionModel()
             {

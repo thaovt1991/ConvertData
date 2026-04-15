@@ -537,4 +537,10 @@ namespace ConvertData.Model.ModelMongo
         public decimal Percentage { get; set; }
         public DateTime? LastUpdate { get; set; }
     }
+
+    public class ParentModel
+    {
+        public string ParentID {  get; set; }
+        public bool isHaveParent { get; set; }
+    }
 }

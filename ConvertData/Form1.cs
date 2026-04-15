@@ -254,7 +254,7 @@ namespace ConverData
             {
                 isConnectedSql = true;
                 connectStringSQL.Enabled = false;      // Khóa ô nhập liệu
-                bttConnectSQL.Text = "Ngắt kết nối";
+                bttConnectSQL.Text = "Chỉnh sửa";
                 bttConnectSQL.BackColor = Color.LightCoral;
 
                 lblConnectSQL.Text = "✔"; // Hiện tích xanh

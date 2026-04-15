@@ -90,14 +90,16 @@ namespace ConvertData.WorkerConvert
                     var dicProject = new Dictionary<string, Guid>();
                     var dicTaskGoals = new Dictionary<string, List<TM_TaskGoals>>();
 
-                   
+                    var listTaskIDs = listTasks.Select(x => x.TaskID).Distinct().ToList() ?? new List<string>();
                     if (parameterModel.IsUpdateFull || parameterModel.IsUpdateTask)
                     {
                         var listProjectIDs = listTasks.Select(x => x.ProjectID).Distinct().ToList() ?? new List<string>();
                         dicProject = await GetProject(listProjectIDs);
-                        var listTaskIDs = listTasks.Select(x => x.TaskID).Distinct().ToList() ?? new List<string>();
-                        dicTaskGoals = await GetListTaskGoals(listTaskIDs);
+                       
+                        dicTaskGoals = await GetListTaskGoalsToDictionary(listTaskIDs);
                     }
+
+                    var dicResource = await GetListTaskResourceToDictionary(listTaskIDs);
 
                     var i = 0;
                     var countSuccess = 0;
@@ -113,7 +115,7 @@ namespace ConvertData.WorkerConvert
                     foreach (var item in listTasks)
                     {
                         //Chuyen dataa
-                        var isSuccces = await AddTaskToSQLServer(item, dicUser, dicProject, dicTaskGoals, parameterModel);
+                        var isSuccces = await AddTaskToSQLServer(item, dicUser, dicProject, dicTaskGoals, dicResource, parameterModel);
                         //end chuyeern
                         //UPDATE NGAY
                         if (isSuccces)
@@ -143,11 +145,12 @@ namespace ConvertData.WorkerConvert
         }
 
         #region task Convert
-        public async Task<bool> AddTaskToSQLServer(TM_Tasks task, Dictionary<string, Guid> dicUsers, Dictionary<string, Guid> dicProject, Dictionary<string, List<TM_TaskGoals>> dicGoals, ParameterModelTask parameterModel)
+        public async Task<bool> AddTaskToSQLServer(TM_Tasks task, Dictionary<string, Guid> dicUsers, Dictionary<string, Guid> dicProject, Dictionary<string, List<TM_TaskGoals>> dicGoals,
+            Dictionary<string, List<TM_TaskResources>> dicRes, ParameterModelTask parameterModel)
         {
             try
             {
-                SQLTask taskSQL = MapModelTask(task,dicUsers, dicProject, dicGoals);
+                SQLTask taskSQL = await MapModelTask(task,dicUsers, dicProject, dicGoals);
 
                 using(var db = new SqlConnection(_connectModel.ConnectionStringSQL))
                 {
@@ -175,7 +178,16 @@ namespace ConvertData.WorkerConvert
                     {
                         int rowsAffected = await db.ExecuteAsync(sql, taskSQL);
                         var result = rowsAffected > 0;
-                       
+                        if (result)
+                        {
+                            //chuyen source
+                            if(dicRes.TryGetValue(task.TaskID,out var listRes))
+                            {
+                                result = await UpdateTaskAssign(listRes,dicUsers, task.RecID);
+                            }
+                            //Chuyen gia han
+                               
+                        }
 
                         return result;
                     }
@@ -194,7 +206,7 @@ namespace ConvertData.WorkerConvert
             
         }
 
-        private SQLTask MapModelTask(TM_Tasks task, Dictionary<string, Guid> dicUsers, Dictionary<string, Guid> dicProject , Dictionary<string, List<TM_TaskGoals>> dicGoals)
+        private async Task<SQLTask> MapModelTask(TM_Tasks task, Dictionary<string, Guid> dicUsers, Dictionary<string, Guid> dicProject , Dictionary<string, List<TM_TaskGoals>> dicGoals)
         {
 
             var taskSQL = new SQLTask()
@@ -318,16 +330,155 @@ namespace ConvertData.WorkerConvert
             }
             else
             {
-                //tu tính
+                //không có thì đệ quy và tính
+                taskSQL.Path = await GetParentList(task);
+            }
+            //category
+            switch (task.Category)
+            {
+                case "G":
+                    taskSQL.Category = 1;
+                    break;
+                case "4":
+                    taskSQL.Category = 2;
+                    break;
+                case "5":
+                    taskSQL.Category = 3;
+                    break;
             }
 
             return taskSQL;
         }
+        private async Task<string> GetParentList(TM_Tasks task)
+        {
+            if (string.IsNullOrEmpty(task.ParentID))
+            {
+                return task.RecID.ToString();
+            }
+            var taskParent = await GetTaskParent(task.ParentID);
+            if (taskParent != null)
+            {
+                string upstreamPath = await GetParentList(taskParent); 
+                return $@"{upstreamPath}\{task.RecID}";
+            }
+
+            return $@"{task.ParentID}\{task.RecID}";
+        }
+        private async Task<string> GetParentList2(TM_Tasks task,string parentList ="")
+        {
+            if (string.IsNullOrEmpty(parentList))
+            {
+                parentList = task.RecID.ToString();
+            }
+            if (!string.IsNullOrEmpty(task.ParentID))
+            {
+                parentList = $@"{task.ParentID}\{parentList}";
+            }
+            var taskParent = await GetTaskParent(task.ParentID);
+            if (taskParent != null)
+            {
+                return await GetParentList2(taskParent, parentList);
+            }
+            return parentList;
+        }
+        private async Task<TM_Tasks> GetTaskParent(string parentID)
+        {
+            if (!Guid.TryParse(parentID, out Guid parentGuid))
+            {
+                return null;
+            }
+
+            var task = await _tmTasks_Collection
+                .Find(x => x.RecID == parentGuid)
+                .Project(x => new TM_Tasks()
+                {
+                    RecID = x.RecID,
+                    ParentID = x.ParentID
+                })
+                .FirstOrDefaultAsync(); 
+
+            return task;
+        }
+        #endregion
+
+        #region TaskResoure => taskAssign
+        private async Task<bool> UpdateTaskAssign(List<TM_TaskResources> taskResources, Dictionary<string, Guid> dicUsers, Guid taskID)
+        {
+            var listAssignTask = new List<SQLTaskResource>();
+            foreach (var resource in taskResources) {
+                SQLTaskResource asignTask = MapTaskResource(resource, taskID);
+                listAssignTask.Add(asignTask);
+            }
+
+            if (listAssignTask.Any())
+            {
+                using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
+                {
+                    string insertSql = @"
+                                        INSERT INTO qlcv.TaskAssign (
+                                        TaskId,
+                                        TaskAssignType,
+                                        AssignTo,
+                                        CompletePercent,
+                                        Status,
+                                        DepartmentId,
+                                        DepartmentName,
+                                        JobTitleName,
+                                        ActiveFlag,
+                                        CreatedBy,
+                                        UpdatedBy,
+                                        CreatedDate,
+                                        UpdatedDate
+                                    ) 
+                                    VALUES (
+                                        @TaskId,
+                                        @TaskAssignType,
+                                        @AssignTo,
+                                        @CompletePercent,
+                                        @Status,
+                                        @DepartmentId,
+                                        @DepartmentName,
+                                        @JobTitleName,
+                                        @ActiveFlag,
+                                        @CreatedBy,
+                                        @UpdatedBy,
+                                        @CreatedDate,
+                                        @UpdatedDate
+                                    )";
+
+                    try
+                    {
+                        await db.ExecuteAsync(insertSql, listAssignTask);
+                    }
+                    catch (Exception ex)
+                    {
+                        _parentForm.richTextBox1.AppendText($"❌ Lỗi SQL Insert Member: {ex.Message}\n");
+                        return false;
+                    }
+                }
+            }
+
+          return true;
+        }
+        private SQLTaskResource MapTaskResource(TM_TaskResources res , Guid taskID)
+        {
+            var assign = new SQLTaskResource()
+            {
+                TaskId = taskID,
+
+            };
+
+            return assign;
+        }
+        
+        #endregion
+
+        #region TaskExtend => WorkTaskExtensionRequest
+
         #endregion
 
 
-
-        #region Hepper User
+        #region Helper User
         public async Task<Dictionary<string, Guid>> GetInfoUsers(List<string> listUserIDs = null, bool isLowerCase = false)
         {
 
@@ -430,7 +581,7 @@ namespace ConvertData.WorkerConvert
 
         }
 
-        public async Task<Dictionary<string,List<TM_TaskGoals>>> GetListTaskGoals(List<string> listTasks = null)
+        public async Task<Dictionary<string,List<TM_TaskGoals>>> GetListTaskGoalsToDictionary(List<string> listTasks = null)
         {
             try
             {
@@ -455,13 +606,39 @@ namespace ConvertData.WorkerConvert
                     })
                     .ToList();
                    return data?.Count > 0 ? data.GroupBy(x=>x.TaskID).ToDictionary(x=>x.Key,g=>g.ToList()) : new Dictionary<string, List<TM_TaskGoals>>();
-                
-
+               
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
                 return new Dictionary<string, List<TM_TaskGoals>>();
+            }
+        }
+
+        public async Task<Dictionary<string, List<TM_TaskResources>>> GetListTaskResourceToDictionary(List<string> listTasks = null)
+        {
+            try
+            {
+
+                var filterBuilder = Builders<TM_TaskResources>.Filter;
+                var filter = FilterDefinition<TM_TaskResources>.Empty; // Mặc định lấy tất cả
+
+                // Nếu có danh sách ID thì lọc theo ID, ngược lại thì để trống (lấy hết)
+                if (listTasks?.Count > 0)
+                {
+                    filter = filterBuilder.In(x => x.TaskID, listTasks);
+                }
+
+                var data = _tmTasksResource_Collection
+                    .Find(filter)
+                    .ToList();
+                return data?.Count > 0 ? data.GroupBy(x => x.TaskID).ToDictionary(x => x.Key, g => g.ToList()) : new Dictionary<string, List<TM_TaskResources>>();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return new Dictionary<string, List<TM_TaskResources>>();
             }
         }
         #endregion

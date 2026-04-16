@@ -35,4 +35,9 @@ namespace ConvertData.Model
         public bool IsUpdateTask { get; set; } = true;
         public bool IsUpdateTaskRes { get; set; } = true;
     }
+
+    public class ParameterModelTag : ParameterModel
+    {
+       public List<string> EntityNames { get; set; }
+    }
 }

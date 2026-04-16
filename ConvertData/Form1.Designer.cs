@@ -80,8 +80,15 @@
             label4 = new Label();
             prgStatusProject = new ProgressBar();
             tabTable = new TabControl();
-            tabPage1 = new TabPage();
             tabPage2 = new TabPage();
+            convertTag = new Button();
+            progressBar1 = new ProgressBar();
+            label23 = new Label();
+            label22 = new Label();
+            label21 = new Label();
+            label20 = new Label();
+            label17 = new Label();
+            tabPage1 = new TabPage();
             nguon_du_lieu.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -93,6 +100,7 @@
             ((System.ComponentModel.ISupportInitialize)numericPageSize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericPage).BeginInit();
             tabTable.SuspendLayout();
+            tabPage1.SuspendLayout();
             SuspendLayout();
             // 
             // nguon_du_lieu
@@ -621,25 +629,97 @@
             tabTable.Size = new Size(828, 264);
             tabTable.TabIndex = 3;
             // 
-            // tabPage1
-            // 
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Name = "tabTag";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(820, 236);
-            tabPage1.TabIndex = 2;
-            tabPage1.Text = "Tag";
-            tabPage1.UseVisualStyleBackColor = true;
-            // 
             // tabPage2
             // 
             tabPage2.Location = new Point(4, 24);
-            tabPage2.Name = "tabHistory";
+            tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(820, 236);
             tabPage2.TabIndex = 3;
             tabPage2.Text = "Lịch sử";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // convertTag
+            // 
+            convertTag.AutoEllipsis = true;
+            convertTag.Location = new Point(627, 34);
+            convertTag.Name = "convertTag";
+            convertTag.Size = new Size(146, 24);
+            convertTag.TabIndex = 24;
+            convertTag.Text = "Đồng bộ tags";
+            convertTag.UseVisualStyleBackColor = true;
+            convertTag.Click += button1_Click;
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(104, 43);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(486, 15);
+            progressBar1.TabIndex = 25;
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Location = new Point(32, 43);
+            label23.Name = "label23";
+            label23.Size = new Size(52, 15);
+            label23.TabIndex = 26;
+            label23.Text = "Tiến độ  ";
+            // 
+            // label22
+            // 
+            label22.AutoSize = true;
+            label22.Location = new Point(104, 15);
+            label22.Name = "label22";
+            label22.Size = new Size(70, 15);
+            label22.TabIndex = 27;
+            label22.Text = "Tổng cộng :";
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Location = new Point(315, 15);
+            label21.Name = "label21";
+            label21.Size = new Size(123, 15);
+            label21.TabIndex = 28;
+            label21.Text = "Đồng bộ thành công: ";
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Location = new Point(180, 15);
+            label20.Name = "label20";
+            label20.Size = new Size(13, 15);
+            label20.TabIndex = 29;
+            label20.Text = "0";
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.FlatStyle = FlatStyle.Popup;
+            label17.ForeColor = Color.Blue;
+            label17.Location = new Point(444, 15);
+            label17.Name = "label17";
+            label17.Size = new Size(13, 15);
+            label17.TabIndex = 30;
+            label17.Text = "0";
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(label17);
+            tabPage1.Controls.Add(label20);
+            tabPage1.Controls.Add(label21);
+            tabPage1.Controls.Add(label22);
+            tabPage1.Controls.Add(label23);
+            tabPage1.Controls.Add(progressBar1);
+            tabPage1.Controls.Add(convertTag);
+            tabPage1.Location = new Point(4, 24);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(820, 236);
+            tabPage1.TabIndex = 2;
+            tabPage1.Text = "Tag";
+            tabPage1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -670,6 +750,8 @@
             ((System.ComponentModel.ISupportInitialize)numericPageSize).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericPage).EndInit();
             tabTable.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -728,7 +810,14 @@
         private Label lblConnectPG;
         private Button bttConnectPG;
         private TabControl Tag;
-        private TabPage tabPage1;
         private TabPage tabPage2;
+        private TabPage tabPage1;
+        public Label label17;
+        public Label label20;
+        private Label label21;
+        private Label label22;
+        private Label label23;
+        public ProgressBar progressBar1;
+        private Button convertTag;
     }
 }

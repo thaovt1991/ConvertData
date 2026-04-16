@@ -50,7 +50,7 @@ namespace ConverData
             connectStringMG.Text = _connectStringMG = "mongodb://admin:Lacviet%23123@172.16.7.34:37017"; //"mongodb://admin:Erm%402021@172.16.7.33:27017";
             connectionStringPG.Text = _connectStringPG = "Host=172.16.7.34;Port=5432;Database=developer;Username=postgres;Password=Erm@2021;Pooling=true;Minimum Pool Size=1;Maximum Pool Size=100;";
             databaseName.Text = _databaseName = "pvoil_Data";
-       
+
             //Date picker
             // Đối với DateTimePicker bắt đầu
             //dateTimePicker1.Format = DateTimePickerFormat.Custom;
@@ -462,7 +462,7 @@ namespace ConverData
             try
             {
                 using var conn = new NpgsqlConnection(connectionString);
-                await conn.OpenAsync(); 
+                await conn.OpenAsync();
                 return true;
             }
             catch (Exception ex)
@@ -476,6 +476,36 @@ namespace ConverData
         private void connectionStringPG_TextChanged(object sender, EventArgs e)
         {
             this._connectStringPG = connectionStringPG.Text;
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            bttConvertTask.Enabled = false;
+
+            prgStatusTask.Value = 0;
+
+            var connectModel = new ConnectionModel()
+            {
+                ConnectionStringPG = _connectStringPG,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
+                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+            };
+            var parameterModel = new ParameterModelTag()
+            {
+                Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
+                PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
+                StartCreatedDate = dateTimePicker3.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EndCreatedDate = dateTimePicker4.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EntityNames = new List<string>() { "TM_Tasks","PM_Project"}
+            };
+
+            var coverter = await new TagConvert(this, _logger, connectModel).ConvertDataTag(parameterModel);
+
+            //Test
+
+            bttConvertTask.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ công việc hoàn tất! \n");
         }
     }
 }

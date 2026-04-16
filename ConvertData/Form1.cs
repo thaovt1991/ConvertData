@@ -8,20 +8,24 @@ using MongoDB.Driver.Core.Configuration;
 using MongoDB.Driver.Core.Servers;
 using NLog;
 using System.Data;
+using Npgsql;
 
 namespace ConverData
 {
     public partial class Form1 : Form
     {
         //SQL 
-        private string ConnectStringIn = "";
+        private string _connectStringSQL = "";
         private SqlConnection? _sqlConnection; // Biến dùng chung cho SQL
         private bool isConnectedSql = false;    // Trạng thái kết nối SQL
         //Mogo
-        private string ConnectStringOut = "";
+        private string _connectStringMG = "";
         private IMongoClient _client; // Biến dùng chung cho cả Form
         private string _databaseName = "";
         private bool isConnectedSourceMG = false;
+        //Porgress
+        private string _connectStringPG = "";
+        private bool isConnectedSourcePG = false;
 
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         public Form1()
@@ -41,11 +45,12 @@ namespace ConverData
             numericPageSize.Value = 1; // 1000;  //t
 
             //Thiết lập hard code test
-            //connectStringSQL.Text = ConnectStringIn = "Server=172.16.12.230\\MSSQLSERVER2025;Database=LV.Shell;User Id=sa;Password=Lv@123456";
-            connectStringSQL.Text = ConnectStringIn = "Server=172.16.12.230\\MSSQLSERVER2025;Database=LV.Shell;User Id=sa;Password=Lv@123456;MultipleActiveResultSets=true;Encrypt=False";
-            connectStringMG.Text = ConnectStringOut = "mongodb://admin:Erm%402021@172.16.7.33:27017";
-            databaseName.Text = _databaseName = "developer_Data";
-
+            //connectStringSQL.Text = _connectStringSQL = "Server=172.16.12.230\\MSSQLSERVER2025;Database=LV.Shell;User Id=sa;Password=Lv@123456";
+            connectStringSQL.Text = _connectStringSQL = "Server=172.16.12.230\\MSSQLSERVER2025;Database=PVOIL.Shell;User Id=sa;Password=Lv@123456;MultipleActiveResultSets=true;Encrypt=False";
+            connectStringMG.Text = _connectStringMG = "mongodb://admin:Lacviet%23123@172.16.7.34:37017"; //"mongodb://admin:Erm%402021@172.16.7.33:27017";
+            connectionStringPG.Text = _connectStringPG = "Host=172.16.7.34;Port=5432;Database=developer;Username=postgres;Password=Erm@2021;Pooling=true;Minimum Pool Size=1;Maximum Pool Size=100;";
+            databaseName.Text = _databaseName = "pvoil_Data";
+       
             //Date picker
             // Đối với DateTimePicker bắt đầu
             //dateTimePicker1.Format = DateTimePickerFormat.Custom;
@@ -86,12 +91,12 @@ namespace ConverData
             {
                 connectionString = connectionString.Replace(@"\\", @"\");
             }
-            this.ConnectStringIn = connectionString;
+            this._connectStringSQL = connectionString;
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            this.ConnectStringOut = connectStringMG.Text;
+            this._connectStringMG = connectStringMG.Text;
         }
 
 
@@ -125,7 +130,7 @@ namespace ConverData
         {
             try
             {
-                if (string.IsNullOrEmpty(connectionString)) connectionString = this.ConnectStringOut;
+                if (string.IsNullOrEmpty(connectionString)) connectionString = this._connectStringMG;
                 // 1. Khởi tạo Client với connection string của bạn
                 _client = new MongoClient(connectionString);
 
@@ -245,7 +250,7 @@ namespace ConverData
             }
 
             // Nếu chưa kết nối -> Thực hiện Kết nối
-            string connStr = ConnectStringIn.Trim(); // Giả sử ô nhập tên là txtSqlConn
+            string connStr = _connectStringSQL.Trim(); // Giả sử ô nhập tên là txtSqlConn
             richTextBox1.AppendText(" đang kiểm tra kết nối SQL Server...\n");
 
             bool success = await IsSqlConnected(connStr);
@@ -324,16 +329,17 @@ namespace ConverData
 
             var connectModel = new ConnectionModel()
             {
-                ConnectionStringMG = this.ConnectStringOut,
-                ConnectionStringSQL = this.ConnectStringIn,
+                ConnectionStringPG = _connectStringPG,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
                 DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
             };
             var parameterModel = new ParameterModelTask()
             {
-                Page = !string.IsNullOrEmpty(numericPage.Text) ? Int32.Parse(numericPage.Text) : 1,
-                PageSize = !string.IsNullOrEmpty(numericPageSize.Text) ? Int32.Parse(numericPageSize.Text) : 100,
-                StartCreatedDate = dateTimePicker3.Value.ToString(),
-                EndCreatedDate = dateTimePicker4.Value.ToString(),
+                Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
+                PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
+                StartCreatedDate = dateTimePicker3.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EndCreatedDate = dateTimePicker4.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                 IsUpdateFull = true,
                 IsUpdateTask = true,
                 IsUpdateTaskRes = true
@@ -377,16 +383,16 @@ namespace ConverData
 
             var connectModel = new ConnectionModel()
             {
-                ConnectionStringMG = this.ConnectStringOut,
-                ConnectionStringSQL = this.ConnectStringIn,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
                 DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
             };
             var parameterModel = new ParameterModel()
             {
                 Page = !string.IsNullOrEmpty(numericPage.Text) ? Int32.Parse(numericPage.Text) : 1,
                 PageSize = !string.IsNullOrEmpty(numericPageSize.Text) ? Int32.Parse(numericPageSize.Text) : 100,
-                StartCreatedDate = dateTimePicker1.Value.ToString(),
-                EndCreatedDate = dateTimePicker2.Value.ToString()
+                StartCreatedDate = dateTimePicker1.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EndCreatedDate = dateTimePicker2.Value.ToString("dd/MM/yyyy HH:mm:ss")
             };
 
             var coverter = await new ProjectConvert(this, _logger, connectModel).ConvertDataProject(parameterModel);
@@ -412,5 +418,64 @@ namespace ConverData
             _databaseName = databaseName.Text;
         }
 
+        private async void bttConnectPG_Click(object sender, EventArgs e)
+        {
+            // Nếu đang kết nối -> Thực hiện Ngắt
+            if (isConnectedSourcePG)
+            {
+                isConnectedSourcePG = false;
+                connectionStringPG.Enabled = true;
+                lblConnectPG.Text = "";           // Mất tích xanh
+                bttConnectPG.Text = "Kiểm tra kết nối";
+                bttConnectPG.BackColor = SystemColors.Control;
+
+                richTextBox1.AppendText("🔌 Đã ngắt kết nối PostgreSQL Server.\n");
+                return;
+            }
+
+            // Nếu chưa kết nối -> Thực hiện Kết nối
+            string connStr = _connectStringPG.Trim();
+            richTextBox1.AppendText(" đang kiểm tra kết nối PostgreSQL Server...\n");
+
+            bool success = await IsPGSqlConnected(connStr);
+
+            if (success)
+            {
+                isConnectedSourcePG = true;
+                connectionStringPG.Enabled = false;      // Khóa ô nhập liệu
+                bttConnectPG.Text = "Chỉnh sửa";
+                bttConnectPG.BackColor = Color.LightCoral;
+
+                lblConnectPG.Text = "✔"; // Hiện tích xanh
+                lblConnectPG.ForeColor = Color.Blue;
+
+                richTextBox1.AppendText("✅ Kết nối PostgreSQL thành công!\n");
+                bttConnectPG.Enabled = true;
+            }
+            else
+            {
+                MessageBox.Show("Không thể kết nối đến PostgreSQL Server!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private async Task<bool> IsPGSqlConnected(string connectionString)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(connectionString);
+                await conn.OpenAsync(); 
+                return true;
+            }
+            catch (Exception ex)
+            {
+                richTextBox1.AppendText($"❌ Lỗi PostgreSQL: {ex.Message}\n");
+                richTextBox1.AppendText($"ConnectString PostgreSQL: {connectStringSQL}\n");
+                return false;
+            }
+        }
+
+        private void connectionStringPG_TextChanged(object sender, EventArgs e)
+        {
+            this._connectStringPG = connectionStringPG.Text;
+        }
     }
 }

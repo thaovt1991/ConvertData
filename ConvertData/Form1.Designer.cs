@@ -31,16 +31,22 @@
             nguon_du_lieu = new GroupBox();
             lblConnectSQL = new Label();
             connectStringSQL = new TextBox();
+            bttConnectSQL = new Button();
             label1 = new Label();
             groupBox1 = new GroupBox();
-            databaseName = new TextBox();
+            groupBox3 = new GroupBox();
+            lblConnectPG = new Label();
+            bttConnectPG = new Button();
+            connectionStringPG = new TextBox();
+            label16 = new Label();
+            groupBox2 = new GroupBox();
             label7 = new Label();
-            lblConnectMG = new Label();
-            label2 = new Label();
-            connectStringMG = new TextBox();
-            bttConvertProject = new Button();
-            bttConnectSQL = new Button();
             bttConnectMG = new Button();
+            lblConnectMG = new Label();
+            databaseName = new TextBox();
+            connectStringMG = new TextBox();
+            label2 = new Label();
+            bttConvertProject = new Button();
             richTextBox1 = new RichTextBox();
             tabTasks = new TabPage();
             convertSucTask = new Label();
@@ -74,8 +80,12 @@
             label4 = new Label();
             prgStatusProject = new ProgressBar();
             tabTable = new TabControl();
+            tabPage1 = new TabPage();
+            tabPage2 = new TabPage();
             nguon_du_lieu.SuspendLayout();
             groupBox1.SuspendLayout();
+            groupBox3.SuspendLayout();
+            groupBox2.SuspendLayout();
             tabTasks.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericPageSizeTM).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericPageTM).BeginInit();
@@ -89,13 +99,14 @@
             // 
             nguon_du_lieu.Controls.Add(lblConnectSQL);
             nguon_du_lieu.Controls.Add(connectStringSQL);
+            nguon_du_lieu.Controls.Add(bttConnectSQL);
             nguon_du_lieu.Controls.Add(label1);
             nguon_du_lieu.Location = new Point(48, 12);
             nguon_du_lieu.Name = "nguon_du_lieu";
-            nguon_du_lieu.Size = new Size(664, 89);
+            nguon_du_lieu.Size = new Size(824, 54);
             nguon_du_lieu.TabIndex = 0;
             nguon_du_lieu.TabStop = false;
-            nguon_du_lieu.Text = "Nguồn dữ liệu SQL";
+            nguon_du_lieu.Text = "NEW PVOIL-Nguồn dữ liệu SQL";
             nguon_du_lieu.Enter += groupBox1_Enter;
             // 
             // lblConnectSQL
@@ -117,6 +128,16 @@
             connectStringSQL.TabIndex = 1;
             connectStringSQL.TextChanged += textBox1_TextChanged;
             // 
+            // bttConnectSQL
+            // 
+            bttConnectSQL.Location = new Point(673, 21);
+            bttConnectSQL.Name = "bttConnectSQL";
+            bttConnectSQL.Size = new Size(129, 23);
+            bttConnectSQL.TabIndex = 4;
+            bttConnectSQL.Text = "Kiểm tra kết nối";
+            bttConnectSQL.UseVisualStyleBackColor = true;
+            bttConnectSQL.Click += btnConnectSql_Click;
+            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -129,63 +150,136 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(databaseName);
-            groupBox1.Controls.Add(label7);
-            groupBox1.Controls.Add(lblConnectMG);
-            groupBox1.Controls.Add(label2);
-            groupBox1.Controls.Add(connectStringMG);
-            groupBox1.Location = new Point(48, 121);
+            groupBox1.Controls.Add(groupBox3);
+            groupBox1.Controls.Add(groupBox2);
+            groupBox1.Location = new Point(48, 72);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(664, 89);
+            groupBox1.Size = new Size(824, 169);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Nguồn  dữ liệu đến từ Mongo DB";
+            groupBox1.Text = "OLD PVOIL-Nguồn  dữ liệu ";
             groupBox1.Enter += groupBox1_Enter_1;
             // 
-            // databaseName
+            // groupBox3
             // 
-            databaseName.Location = new Point(124, 52);
-            databaseName.Name = "databaseName";
-            databaseName.Size = new Size(166, 23);
-            databaseName.TabIndex = 4;
-            databaseName.TextChanged += textBox3_TextChanged_1;
+            groupBox3.Controls.Add(lblConnectPG);
+            groupBox3.Controls.Add(bttConnectPG);
+            groupBox3.Controls.Add(connectionStringPG);
+            groupBox3.Controls.Add(label16);
+            groupBox3.Location = new Point(9, 111);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(809, 53);
+            groupBox3.TabIndex = 6;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "PostgreSQL";
+            // 
+            // lblConnectPG
+            // 
+            lblConnectPG.AutoSize = true;
+            lblConnectPG.BorderStyle = BorderStyle.FixedSingle;
+            lblConnectPG.ForeColor = Color.Red;
+            lblConnectPG.Location = new Point(618, 19);
+            lblConnectPG.Name = "lblConnectPG";
+            lblConnectPG.Size = new Size(16, 17);
+            lblConnectPG.TabIndex = 5;
+            lblConnectPG.Text = "X";
+            // 
+            // bttConnectPG
+            // 
+            bttConnectPG.Location = new Point(664, 15);
+            bttConnectPG.Name = "bttConnectPG";
+            bttConnectPG.Size = new Size(129, 23);
+            bttConnectPG.TabIndex = 6;
+            bttConnectPG.Text = "Kiểm tra kết nối";
+            bttConnectPG.UseVisualStyleBackColor = true;
+            bttConnectPG.Click += bttConnectPG_Click;
+            // 
+            // connectionStringPG
+            // 
+            connectionStringPG.Location = new Point(112, 16);
+            connectionStringPG.Name = "connectionStringPG";
+            connectionStringPG.Size = new Size(494, 23);
+            connectionStringPG.TabIndex = 3;
+            connectionStringPG.TextChanged += connectionStringPG_TextChanged;
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new Point(0, 19);
+            label16.Name = "label16";
+            label16.Size = new Size(106, 15);
+            label16.TabIndex = 2;
+            label16.Text = "Nguồn dữ liệu đến";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(label7);
+            groupBox2.Controls.Add(bttConnectMG);
+            groupBox2.Controls.Add(lblConnectMG);
+            groupBox2.Controls.Add(databaseName);
+            groupBox2.Controls.Add(connectStringMG);
+            groupBox2.Controls.Add(label2);
+            groupBox2.Location = new Point(6, 22);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(812, 83);
+            groupBox2.TabIndex = 5;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "MongoDB";
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(17, 55);
+            label7.Location = new Point(11, 56);
             label7.Name = "label7";
             label7.Size = new Size(90, 15);
             label7.TabIndex = 3;
             label7.Text = "Database Name";
+            // 
+            // bttConnectMG
+            // 
+            bttConnectMG.Location = new Point(667, 24);
+            bttConnectMG.Name = "bttConnectMG";
+            bttConnectMG.Size = new Size(129, 23);
+            bttConnectMG.TabIndex = 6;
+            bttConnectMG.Text = "Kiểm tra kết nối";
+            bttConnectMG.UseVisualStyleBackColor = true;
+            bttConnectMG.Click += button4_Click;
             // 
             // lblConnectMG
             // 
             lblConnectMG.AutoSize = true;
             lblConnectMG.BorderStyle = BorderStyle.FixedSingle;
             lblConnectMG.ForeColor = Color.Red;
-            lblConnectMG.Location = new Point(627, 23);
+            lblConnectMG.Location = new Point(621, 19);
             lblConnectMG.Name = "lblConnectMG";
             lblConnectMG.Size = new Size(16, 17);
             lblConnectMG.TabIndex = 2;
             lblConnectMG.Text = "X";
             // 
-            // label2
+            // databaseName
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(15, 25);
-            label2.Name = "label2";
-            label2.Size = new Size(106, 15);
-            label2.TabIndex = 1;
-            label2.Text = "Nguồn dữ liệu đến";
+            databaseName.Location = new Point(121, 48);
+            databaseName.Name = "databaseName";
+            databaseName.Size = new Size(166, 23);
+            databaseName.TabIndex = 4;
+            databaseName.TextChanged += textBox3_TextChanged_1;
             // 
             // connectStringMG
             // 
-            connectStringMG.Location = new Point(127, 17);
+            connectStringMG.Location = new Point(121, 16);
             connectStringMG.Name = "connectStringMG";
             connectStringMG.Size = new Size(494, 23);
             connectStringMG.TabIndex = 0;
             connectStringMG.TextChanged += textBox2_TextChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(9, 24);
+            label2.Name = "label2";
+            label2.Size = new Size(106, 15);
+            label2.TabIndex = 1;
+            label2.Text = "Nguồn dữ liệu đến";
             // 
             // bttConvertProject
             // 
@@ -198,31 +292,11 @@
             bttConvertProject.UseVisualStyleBackColor = false;
             bttConvertProject.Click += ConverterProjectClick;
             // 
-            // bttConnectSQL
-            // 
-            bttConnectSQL.Location = new Point(718, 22);
-            bttConnectSQL.Name = "bttConnectSQL";
-            bttConnectSQL.Size = new Size(129, 23);
-            bttConnectSQL.TabIndex = 4;
-            bttConnectSQL.Text = "Kiểm tra kết nối";
-            bttConnectSQL.UseVisualStyleBackColor = true;
-            bttConnectSQL.Click += btnConnectSql_Click;
-            // 
-            // bttConnectMG
-            // 
-            bttConnectMG.Location = new Point(718, 142);
-            bttConnectMG.Name = "bttConnectMG";
-            bttConnectMG.Size = new Size(129, 23);
-            bttConnectMG.TabIndex = 6;
-            bttConnectMG.Text = "Kiểm tra kết nối";
-            bttConnectMG.UseVisualStyleBackColor = true;
-            bttConnectMG.Click += button4_Click;
-            // 
             // richTextBox1
             // 
-            richTextBox1.Location = new Point(48, 496);
+            richTextBox1.Location = new Point(44, 528);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(803, 113);
+            richTextBox1.Size = new Size(822, 113);
             richTextBox1.TabIndex = 7;
             richTextBox1.Text = "";
             // 
@@ -246,7 +320,7 @@
             tabTasks.Location = new Point(4, 24);
             tabTasks.Name = "tabTasks";
             tabTasks.Padding = new Padding(3);
-            tabTasks.Size = new Size(794, 236);
+            tabTasks.Size = new Size(820, 236);
             tabTasks.TabIndex = 1;
             tabTasks.Text = "Quản lý công việc";
             tabTasks.UseVisualStyleBackColor = true;
@@ -406,7 +480,7 @@
             tabProject.Location = new Point(4, 24);
             tabProject.Name = "tabProject";
             tabProject.Padding = new Padding(3);
-            tabProject.Size = new Size(794, 236);
+            tabProject.Size = new Size(820, 236);
             tabProject.TabIndex = 0;
             tabProject.Text = "Quản lý dự án";
             tabProject.UseVisualStyleBackColor = true;
@@ -539,20 +613,40 @@
             // 
             tabTable.Controls.Add(tabProject);
             tabTable.Controls.Add(tabTasks);
-            tabTable.Location = new Point(48, 216);
+            tabTable.Controls.Add(tabPage1);
+            tabTable.Controls.Add(tabPage2);
+            tabTable.Location = new Point(44, 247);
             tabTable.Name = "tabTable";
             tabTable.SelectedIndex = 0;
-            tabTable.Size = new Size(802, 264);
+            tabTable.Size = new Size(828, 264);
             tabTable.TabIndex = 3;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Location = new Point(4, 24);
+            tabPage1.Name = "tabTag";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(820, 236);
+            tabPage1.TabIndex = 2;
+            tabPage1.Text = "Tag";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            tabPage2.Location = new Point(4, 24);
+            tabPage2.Name = "tabHistory";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(820, 236);
+            tabPage2.TabIndex = 3;
+            tabPage2.Text = "Lịch sử";
+            tabPage2.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(897, 633);
+            ClientSize = new Size(897, 665);
             Controls.Add(richTextBox1);
-            Controls.Add(bttConnectMG);
-            Controls.Add(bttConnectSQL);
             Controls.Add(tabTable);
             Controls.Add(groupBox1);
             Controls.Add(nguon_du_lieu);
@@ -563,7 +657,10 @@
             nguon_du_lieu.ResumeLayout(false);
             nguon_du_lieu.PerformLayout();
             groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             tabTasks.ResumeLayout(false);
             tabTasks.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numericPageSizeTM).EndInit();
@@ -624,5 +721,14 @@
         public Label countTask;
         private Label label18;
         private Label label19;
+        private GroupBox groupBox2;
+        private GroupBox groupBox3;
+        private TextBox connectionStringPG;
+        private Label label16;
+        private Label lblConnectPG;
+        private Button bttConnectPG;
+        private TabControl Tag;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
     }
 }

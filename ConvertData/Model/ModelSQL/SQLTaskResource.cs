@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConvertData.Model.ModelSQL
 {
-    public class SQLTaskResource  //taskAssign
+    public class SQLTaskResource : BaseModel //taskAssign
     {
         public Guid TaskId { get; set; }
 
@@ -42,7 +42,7 @@ namespace ConvertData.Model.ModelSQL
         /// Tất cả Reporting -> Reporting
         /// Nếu Người theo dõi hoặc phối hợp có cập nhật thì trạng thái riêng của họ sẽ không ảnh hưởng đến trạng thái công việc
         /// </summary>
-        public WorkTaskStatus? Status { get; set; }
+        public WorkTaskStatus? Status { get; set; }  //WorkTaskStatus
 
         /// <summary>
         /// ID Phòng ban
@@ -61,10 +61,14 @@ namespace ConvertData.Model.ModelSQL
         /// </summary>
         public string? JobTitleName { get; set; }
 
-        public byte ActiveFlag { get; set; } = 0;
+        //public byte ActiveFlag { get; set; } = 0;
 
-        public Guid CreatedBy { get; set; }
-
-        public Guid? UpdatedBy { get; set; }
+        //public Guid CreatedBy { get; set; }
+        //public DateTimeOffset CreatedDate { get; set; }
+        ///// <summary>
+        ///// Người cập nhật cuối cùng
+        ///// </summary>
+        //public Guid? UpdatedBy { get; set; }
+        //public DateTimeOffset? UpdatedDate { get; set; }
     }
 }

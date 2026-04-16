@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConvertData.Model.ModelSQL
 {
-    public class SQLTaskExtend
+    public class SQLTaskExtend : BaseModel
     {
         public Guid TaskId { get; set; }
 
@@ -19,18 +19,18 @@ namespace ConvertData.Model.ModelSQL
         public DateTimeOffset? OldDueDate { get; set; }
         public DateTimeOffset RequestedDueDate { get; set; }
         public string? Reason { get; set; }
-        public WorkTaskExtensionRequestStatus Status { get; set; } = WorkTaskExtensionRequestStatus.Pending;
+        public byte Status { get; set; } // = WorkTaskExtensionRequestStatus.Pending;
         public Guid? ReviewedBy { get; set; }
         public DateTimeOffset? ReviewedDate { get; set; }
         public string? ReviewComment { get; set; }
-        public byte ActiveFlag { get; set; } = 0;
-        public Guid CreatedBy { get; set; }
-        public Guid? UpdatedBy { get; set; }
+        //public byte ActiveFlag { get; set; } = 0;
+        //public Guid CreatedBy { get; set; }
+        //public Guid? UpdatedBy { get; set; }
     }
     public enum WorkTaskExtensionRequestStatus : byte
     {
-        Pending = 1,
-        Approved = 2,
+        Pending = 1, //3
+        Approved = 2,//5
         Rejected = 3,
     }
 

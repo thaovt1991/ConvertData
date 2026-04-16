@@ -15,6 +15,10 @@ namespace ConvertData.Model
         //SQL
         public string ConnectionStringSQL { get; set; }
         public string DatabaseNameSQL { get; set; }
+
+        //PG
+        public string ConnectionStringPG { get; set; }
+
     }
 
     public class ParameterModel

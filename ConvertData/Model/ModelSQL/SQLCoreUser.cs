@@ -16,4 +16,26 @@ namespace ConvertData.Model.ModelSQL
     {
         public string FullName { get; set; }
     }
+
+    public class SQLCoreUserInfo
+    {
+        public Guid UserId { get; set; }
+        public Guid DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
+
+        public string JobTitleName { get; set; }
+    }
+
+    public class BaseModel
+    {
+        public Guid Id { get; set; }
+        public byte ActiveFlag { get; set; } = 0;
+        public Guid CreatedBy { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        /// <summary>
+        /// Người cập nhật cuối cùng
+        /// </summary>
+        public Guid? UpdatedBy { get; set; }
+        public DateTimeOffset? UpdatedDate { get; set; }
+    }
 }

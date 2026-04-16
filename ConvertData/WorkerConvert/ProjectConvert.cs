@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static Dapper.SqlMapper;
+using static Microsoft.Data.SqlClient.Internal.SqlClientEventSource;
 
 namespace ConvertData.WorkerConvert
 {
@@ -236,6 +237,7 @@ namespace ConvertData.WorkerConvert
 
         public async Task<bool> AddProjectToSQLServer(PM_Projects item, Dictionary<string, Guid> dicUsers)
         {
+            if (string.IsNullOrEmpty(item.ProjectID)) return false;
             SQLProject project = MapToSQL(item, dicUsers);
             //Conver
             using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
@@ -268,6 +270,9 @@ namespace ConvertData.WorkerConvert
                     var result = rowsAffected > 0;
                     if (result)
                     {
+                        //xóa cũ
+                        await DeleteProjectMembersByCode(project.Code);
+                        //Update mới
                         result = await UpdateMembersProject(item, project.Id, dicUsers);
                     }
 
@@ -293,7 +298,7 @@ namespace ConvertData.WorkerConvert
                 if (!dic.TryGetValue(objectID, out var memberID) &&
                     !dic.TryGetValue($@"pvoil\{objectID}", out memberID))
                 {
-                    _parentForm.richTextBox1.AppendText($"⚠️ Bỏ qua: Không tìm thấy User {objectID}\n");
+                    _parentForm.richTextBox1.AppendText($"⚠️ Bỏ qua: Không tìm thấy User {member?.ObjectID}\n");
                     continue;
                 }
                   
@@ -323,9 +328,7 @@ namespace ConvertData.WorkerConvert
             }
             if (sqlMembers.Any())
             {
-                using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
-                {
-                    string insertSql = @"
+                string insertSql = @"
                                         INSERT INTO qlcv.ProjectMembers (
                                         ProjectId, ModuleType, ModuleObjectId,MemberId,ProjectMemberType,
                                         ActiveFlag, CreatedBy,SortOrder,CreatedDate
@@ -335,6 +338,8 @@ namespace ConvertData.WorkerConvert
                                         @ActiveFlag, @CreatedBy,@SortOrder,@CreatedDate
                                         )";
 
+                using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
+                {
                     try
                     {
                         await db.ExecuteAsync(insertSql, sqlMembers);
@@ -403,6 +408,54 @@ namespace ConvertData.WorkerConvert
                 return new Dictionary<string, Guid>();
             }
 
+        }
+
+        public async Task<Guid?> GetIdProjectByCode(string code)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(_connectModel.ConnectionStringSQL))
+                {
+                    await conn.OpenAsync();
+                    string sql = @"SELECT Id FROM qlcv.Project WHERE  Code = @Code";
+
+                    var result = await conn.ExecuteScalarAsync<Guid?>(sql, new { Code = code});
+                    return result;
+                }
+            }
+            catch (Exception ex) {
+                _logger.Error(ex);
+                return null;
+            }
+        }
+        //Xóa
+        public async Task<int> DeleteTaskExtendByTaskIds(List<Guid> listProjectId)
+        {
+            if (listProjectId == null || !listProjectId.Any()) return 0;
+            using (var conn = new SqlConnection(_connectModel.ConnectionStringSQL))
+            {
+                await conn.OpenAsync();
+
+                string sql = "DELETE FROM qlcv.ProjectMembers WHERE ProjectId IN @listProjectId";
+                int rowsAffected = await conn.ExecuteAsync(sql, new { listProjectId });
+                return rowsAffected;
+            }
+        }
+        public async Task<int> DeleteProjectMembersByCode(string code)
+        {
+            if (string.IsNullOrEmpty(code)) return 0;           
+            using (var conn = new SqlConnection(_connectModel.ConnectionStringSQL))
+            {
+                await conn.OpenAsync();
+
+                string sql = @"
+                    DELETE pm
+                    FROM qlcv.ProjectMembers pm
+                    INNER JOIN qlcv.Projects p ON pm.ProjectId = p.Id
+                    WHERE p.Code = @Code";
+
+                return await conn.ExecuteAsync(sql, new { Code = code });
+            }
         }
     }
 }

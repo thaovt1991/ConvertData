@@ -233,8 +233,7 @@ namespace ConvertData.Model.ModelMongo
         // 2 field này dành cho việc mapping data import từ SurePortal sang Codx - gio sài để máp pvoid
         public string ImportFrom { get; set; } // "sqlsvr", // 2 field này cần thống nhất với Thương trước khi sử dụng
         public string MapID { get; set; } // 2 field này cần thống nhất với Thương trước khi sử dụng
-        public int? ImportStatus { get; set; } // Trạng thái import dữ liệu: bit-1: AttachFile; bit-2: History
-
+        public int? ImportStatus { get; set; } // Trạng thái import dữ liệu: bit-1: AttachFile; bit-2: History ; 3-tag
         public List<TM_History> History { get; set; }
         /// <summary>
         /// Column: TM_Sprints.IterationID

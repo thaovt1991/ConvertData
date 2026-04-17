@@ -20,4 +20,15 @@ namespace ConvertData.Model.ModelSQL
         Project = 0,
         Task = 1
     }
+
+    public class SQLTagTask :BaseModel
+    {
+       public Guid TaskId { get; set; }
+       public Guid TagId { get; set; }
+    }
+    public class SQLTagProject : BaseModel
+    {
+        public Guid ProjectId { get; set; }
+        public Guid TagId { get; set; }
+    }
 }

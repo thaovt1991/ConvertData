@@ -480,7 +480,7 @@ namespace ConverData
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            bttConvertTask.Enabled = false;
+            convertTag.Enabled = false;
 
             prgStatusTask.Value = 0;
 
@@ -493,19 +493,49 @@ namespace ConverData
             };
             var parameterModel = new ParameterModelTag()
             {
-                Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
-                PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
-                StartCreatedDate = dateTimePicker3.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                EndCreatedDate = dateTimePicker4.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                EntityNames = new List<string>() { "TM_Tasks","PM_Project"}
+                //Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
+                //PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
+                //StartCreatedDate = dateTimePicker3.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                //EndCreatedDate = dateTimePicker4.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EntityNames = new List<string>() { "TM_Tasks", "PM_Project" }
             };
 
             var coverter = await new TagConvert(this, _logger, connectModel).ConvertDataTag(parameterModel);
 
             //Test
 
-            bttConvertTask.Enabled = true;
-            richTextBox1.AppendText("Đồng bộ công việc hoàn tất! \n");
+            convertTag.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ Tag hoàn tất! \n");
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            convertTaskTag.Enabled = false;
+
+            progressBarTaskTag.Value = 0;
+
+            var connectModel = new ConnectionModel()
+            {
+                ConnectionStringPG = _connectStringPG,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
+                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+            };
+            var parameterModel = new ParameterModelTag()
+            {
+                //Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
+                //PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
+                StartCreatedDate = dateTimePicker6.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EndCreatedDate = dateTimePicker5.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EntityNames = new List<string>() { "TM_Tasks", "PM_Project" }
+            };
+
+            var coverter = await new TagConvert(this, _logger, connectModel).ConvertTagsTasks(parameterModel);
+
+            //Test
+
+            convertTaskTag.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ Tag công việc hoàn tất! \n");
         }
     }
 }

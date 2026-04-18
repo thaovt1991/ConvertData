@@ -266,11 +266,10 @@ namespace ConvertData.WorkerConvert
                     foreach (var item in listTasks)
                     {
                         var createdBy = item.CreatedBy?.ToLower() ?? "";
-                        var createdById = DefaultUserId;
-                        if (dicUsers.TryGetValue(createdBy, out var createdByID) ||
-                            dicUsers.TryGetValue($@"pvoil\{createdBy}", out createdByID))
+                        if (!dicUsers.TryGetValue(createdBy, out var createdById) &&
+                           !dicUsers.TryGetValue($@"pvoil\{createdBy}", out createdById))
                         {
-                            createdById = createdByID;
+                            createdById = DefaultUserId;
                         }
 
                         //Chuyen dataa
@@ -304,7 +303,7 @@ namespace ConvertData.WorkerConvert
             }
         }
 
-        private async Task<bool> AddTaskTag(TM_Tasks task,Guid createdBy, bool createdNew = false)
+        public async Task<bool> AddTaskTag(TM_Tasks task,Guid createdBy, bool createdNew = false)
         {
             try
             {
@@ -434,6 +433,168 @@ namespace ConvertData.WorkerConvert
                 var result = await conn.QueryAsync<SQLTag>(sql, parameters);
                 return result.ToList();
             }
+        }
+
+        //----------------------PROJETC-TAG-------------------//
+        public async Task<bool> ConvertTagsProject(ParameterModelTag parameterModel)
+        {
+            try
+            {
+                var filterBuilder = Builders<PM_Projects>.Filter;
+
+                var filter = filterBuilder.And(
+                            filterBuilder.Ne(x => x.ConvertStatus, 3),
+                            filterBuilder.Ne(x => x.IsTemplate, "1"),
+                            filterBuilder.Ne(x => x.Tags, ""),
+                            filterBuilder.Ne(x => x.Tags, null)
+                        );
+
+                var startCreatedDate = parameterModel?.StartCreatedDate;
+                var endCreatedDate = parameterModel?.EndCreatedDate;
+
+                if (!string.IsNullOrEmpty(startCreatedDate))
+                {
+                    if (DateTime.TryParse(startCreatedDate, out DateTime start))
+                    {
+                        filter &= filterBuilder.Gte(x => x.CreatedOn, start);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(endCreatedDate))
+                {
+                    if (DateTime.TryParse(endCreatedDate, out DateTime end))
+                    {
+                        var endOfDay = end.Date.AddDays(1).AddTicks(-1);
+                        filter &= filterBuilder.Lte(x => x.CreatedOn, endOfDay);
+                    }
+                }
+
+
+                var listProjects = await _pmProject_Collection.Find(filter)
+                                         .ToListAsync();
+
+                _parentForm.label27.Text = (listProjects?.Count ?? 0).ToString();
+                _parentForm.label26.Text = "0";
+
+                if (listProjects?.Count > 0)
+                {
+                    _parentForm.richTextBox1.AppendText($"Tìm thấy {listProjects.Count} dự án có TAG {(!string.IsNullOrEmpty(startCreatedDate) ? "từ " + startCreatedDate + " " : "")}{(!string.IsNullOrEmpty(endCreatedDate) ? "đến " + endCreatedDate : "")}\n");
+                    var listUser = listProjects.Select(x => x.CreatedBy).Distinct().ToList();
+
+                    var dicUsers = await _baseConvert.GetInfoUsers(listUser);
+
+                    var i = 0;
+                    var countSuccess = 0;
+                    IProgress<int> progress = new Progress<int>(value =>
+                    {
+                        _parentForm.progressBar1.Value = value; // Cập nhật thanh tiến trình
+                    });
+                    IProgress<string> countSuccessFunc = new Progress<string>(value =>
+                    {
+                        _parentForm.label26.Text = value;
+                    });
+
+                    foreach (var item in listProjects)
+                    {
+                        var createdBy = item.CreatedBy?.ToLower() ?? "";
+                        if (!dicUsers.TryGetValue(createdBy, out var createdById) &&
+                           !dicUsers.TryGetValue($@"pvoil\{createdBy}", out createdById))
+                        {
+                            createdById = DefaultUserId;
+                        }
+
+                        //Chuyen dataa
+                        var isSuccces = await AddProjectTag(item, createdById, true);
+                        //end chuyeern
+                        //UPDATE NGAY
+                        if (isSuccces)
+                        {
+                            var updateFilter = Builders<PM_Projects>.Filter.Eq(x => x.Id, item.Id);
+                            var updateDefinition = Builders<PM_Projects>.Update.Set(x => x.ConvertStatus, 3);
+                            await _pmProject_Collection.UpdateOneAsync(updateFilter, updateDefinition);
+                            countSuccess++;
+
+                            countSuccessFunc.Report(countSuccess.ToString());
+                        }
+
+                        i++;
+                        int percentComplete = (i * 100) / listProjects.Count;
+                        progress.Report(percentComplete);
+
+                    }
+                }
+                else _parentForm.richTextBox1.AppendText(($"Không có data nào được tìm thấy \n"));
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _parentForm.richTextBox1.AppendText(($"Lỗi truy vấn: {ex.Message}"));
+                return false;
+            }
+        }
+
+        public async Task<bool> AddProjectTag(PM_Projects pro, Guid createdBy, bool createdNew = false)
+        {
+            try
+            {
+                var tags = pro.Tags.Split(";", StringSplitOptions.RemoveEmptyEntries).ToList();
+                var listSQLTag = await GetTagByNames(tags, TagType.Project, createdBy, createdNew);
+                if (listSQLTag?.Count > 0)
+                {
+                    var list = new List<SQLTagProject>();
+                    foreach (var tagName in tags)
+                    {
+                        var tag = listSQLTag?.FirstOrDefault(x => x.Name == tagName);
+                        if (tag == null) continue;
+                        var tagPro = new SQLTagProject()
+                        {
+                            Id = Guid.NewGuid(),
+                            ProjectId = pro.RecID,
+                            TagId = tag.Id,
+                            CreatedDate = pro.CreatedOn,
+                            CreatedBy = createdBy,
+                            ActiveFlag = 0
+                        };
+
+                        list.Add(tagPro);
+                    }
+                    if (list?.Count > 0)
+                    {
+                        var sql = @"
+                             DELETE FROM qlcv.ProjectTags WHERE ProjectId = @ProjectId;   --//Xóa cũ 
+                             INSERT INTO qlcv.ProjectTags ( 
+                               [Id]
+                              ,[ProjectId]
+                              ,[TagId]
+                              ,[ActiveFlag]
+                              ,[CreatedBy]
+                              ,[UpdatedBy]
+                              ,[CreatedDate]
+                              ,[UpdatedDate]
+                             )
+                             VALUES (
+                            @Id,@ProjectId,@TagId,@ActiveFlag
+                            ,@CreatedBy,@UpdatedBy,@CreatedDate,@UpdatedDate
+                            )
+                            ";
+                        using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))
+                        {
+                            await db.OpenAsync();
+                            await db.ExecuteAsync(sql, list);
+                        }
+                    }
+
+                    return true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                _parentForm.richTextBox1.AppendText($"Lỗi ADD TASK TAG : {ex.Message}\n");
+            }
+            return false;
         }
     }
 

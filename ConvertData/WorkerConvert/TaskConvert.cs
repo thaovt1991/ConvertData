@@ -148,8 +148,27 @@ namespace ConvertData.WorkerConvert
                         //UPDATE NGAY
                         if (isSuccces)
                         {
+                            var isSucTag = false;
+                            if (!string.IsNullOrEmpty(item.Tags))
+                            {
+                                var createdBy = item.CreatedBy?.ToLower() ?? "";                         
+                                if (!dicUser.TryGetValue(createdBy, out var createdById) &&
+                                   !dicUser.TryGetValue($@"pvoil\{createdBy}", out createdById))
+                                {
+                                    createdById = DefaultUserId;
+                                }
+                                isSucTag = await new TagConvert(_parentForm,_logger,_connectModel).AddTaskTag(item, createdById, true);
+                            }
                             var updateFilter = Builders<TM_Tasks>.Filter.Eq(x => x.Id, item.Id);
-                            var updateDefinition = Builders<TM_Tasks>.Update.Set(x => x.ImportFrom, "convertToSQL");
+                            //var updateDefinition = Builders<TM_Tasks>.Update.Set(x => x.ImportFrom, "convertToSQL");
+                             var updates = new List<UpdateDefinition<TM_Tasks>>();
+                             updates.Add(Builders<TM_Tasks>.Update.Set(x => x.ImportFrom, "convertToSQL"));
+                            if (isSucTag)
+                            {
+                                updates.Add(Builders<TM_Tasks>.Update.Set(x => x.ImportStatus, 3));
+                            }
+                            var updateDefinition = Builders<TM_Tasks>.Update.Combine(updates);
+
                             await _tmTasks_Collection.UpdateOneAsync(updateFilter, updateDefinition);
                             countSuccess++;
 

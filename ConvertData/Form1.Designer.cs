@@ -101,7 +101,7 @@
             label29 = new Label();
             label30 = new Label();
             progressBar1 = new ProgressBar();
-            bttConvertTaskTag = new Button();
+            bttConvertProTag = new Button();
             dateTimePicker7 = new DateTimePicker();
             dateTimePicker8 = new DateTimePicker();
             label24 = new Label();
@@ -841,7 +841,7 @@
             tabPage4.Controls.Add(label29);
             tabPage4.Controls.Add(label30);
             tabPage4.Controls.Add(progressBar1);
-            tabPage4.Controls.Add(bttConvertTaskTag);
+            tabPage4.Controls.Add(bttConvertProTag);
             tabPage4.Controls.Add(dateTimePicker7);
             tabPage4.Controls.Add(dateTimePicker8);
             tabPage4.Controls.Add(label24);
@@ -909,16 +909,17 @@
             progressBar1.Size = new Size(555, 20);
             progressBar1.TabIndex = 40;
             // 
-            // bttConvertTaskTag
+            // bttConvertProTag
             // 
-            bttConvertTaskTag.AutoEllipsis = true;
-            bttConvertTaskTag.Location = new Point(712, 115);
-            bttConvertTaskTag.Margin = new Padding(3, 4, 3, 4);
-            bttConvertTaskTag.Name = "bttConvertTaskTag";
-            bttConvertTaskTag.Size = new Size(167, 32);
-            bttConvertTaskTag.TabIndex = 39;
-            bttConvertTaskTag.Text = "Đồng bộ tags dự án";
-            bttConvertTaskTag.UseVisualStyleBackColor = true;
+            bttConvertProTag.AutoEllipsis = true;
+            bttConvertProTag.Location = new Point(712, 115);
+            bttConvertProTag.Margin = new Padding(3, 4, 3, 4);
+            bttConvertProTag.Name = "bttConvertProTag";
+            bttConvertProTag.Size = new Size(167, 32);
+            bttConvertProTag.TabIndex = 39;
+            bttConvertProTag.Text = "Đồng bộ tags dự án";
+            bttConvertProTag.UseVisualStyleBackColor = true;
+            bttConvertProTag.Click += bttConvertTaskTag_Click;
             // 
             // dateTimePicker7
             // 
@@ -1158,7 +1159,7 @@
         private Label label29;
         private Label label30;
         public ProgressBar progressBar1;
-        private Button bttConvertTaskTag;
+        private Button bttConvertProTag;
         private DateTimePicker dateTimePicker7;
         private DateTimePicker dateTimePicker8;
         private Label label24;

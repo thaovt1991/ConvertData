@@ -113,8 +113,27 @@ namespace ConvertData.WorkerConvert
                         //UPDATE NGAY
                         if (isSuccces)
                         {
+                            var isSucTag = false;
+                            if (!string.IsNullOrEmpty(item.Tags))
+                            {
+                                var createdBy = item.CreatedBy?.ToLower() ?? "";
+                                if (!dicUser.TryGetValue(createdBy, out var createdById) &&
+                                   !dicUser.TryGetValue($@"pvoil\{createdBy}", out createdById))
+                                {
+                                    createdById = DefaultUserId;
+                                }
+                                isSucTag = await new TagConvert(_parentForm, _logger, _connectModel).AddProjectTag(item, createdById, true);
+                            }
+
                             var updateFilter = Builders<PM_Projects>.Filter.Eq(x => x.Id, item.Id);
-                            var updateDefinition = Builders<PM_Projects>.Update.Set(x => x.PortalStatus, "2");
+                            //var updateDefinition = Builders<PM_Projects>.Update.Set(x => x.PortalStatus, "2");
+                            var updates = new List<UpdateDefinition<PM_Projects>>();
+                            updates.Add(Builders<PM_Projects>.Update.Set(x => x.PortalStatus, "2"));
+                            if (isSucTag)
+                            {
+                                updates.Add(Builders<PM_Projects>.Update.Set(x => x.ConvertStatus, 3));
+                            }
+                            var updateDefinition = Builders<PM_Projects>.Update.Combine(updates);
                             await _pmProject_Collection.UpdateOneAsync(updateFilter, updateDefinition);
                             countSuccess++;
                             // Thay vì update ngay, ta cho vào danh sách chờ
@@ -155,7 +174,7 @@ namespace ConvertData.WorkerConvert
         {
             var project = new SQLProject
             {
-                Id = Guid.NewGuid(),
+                Id = mongoItem.RecID,
                 Code = mongoItem.ProjectID,
                 Name = mongoItem.ProjectName ?? "No Name",
                 // Description = mongoItem.Description,

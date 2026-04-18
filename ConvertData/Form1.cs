@@ -537,5 +537,35 @@ namespace ConverData
             convertTaskTag.Enabled = true;
             richTextBox1.AppendText("Đồng bộ Tag công việc hoàn tất! \n");
         }
+
+        private async void bttConvertTaskTag_Click(object sender, EventArgs e)
+        {
+            bttConvertProTag.Enabled = false;
+
+            progressBar1.Value = 0;
+
+            var connectModel = new ConnectionModel()
+            {
+                ConnectionStringPG = _connectStringPG,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
+                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+            };
+            var parameterModel = new ParameterModelTag()
+            {
+                //Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
+                //PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
+                StartCreatedDate = dateTimePicker7.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EndCreatedDate = dateTimePicker8.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                EntityNames = new List<string>() { "TM_Tasks", "PM_Project" }
+            };
+
+            var coverter = await new TagConvert(this, _logger, connectModel).ConvertTagsProject(parameterModel);
+
+            //Test
+
+            bttConvertProTag.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ Tag dự án hoàn tất! \n");
+        }
     }
 }

@@ -146,6 +146,7 @@ namespace ConvertData.Model.ModelMongo
         public string CompanyName { get; set; }
         public string DW { get; set; }// - bien de biet có data Fact
         public string PortalStatus { get; set; }  //Không biết dùng làm gì thì dùng để biết là chuyển đổi
+        public int? ConvertStatus { get; set; } //1 file 2 his 3 tag
     }
 
     public class PM_Permissions {

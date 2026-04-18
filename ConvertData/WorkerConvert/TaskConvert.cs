@@ -149,7 +149,7 @@ namespace ConvertData.WorkerConvert
                         if (isSuccces)
                         {
                             var isSucTag = false;
-                            if (!string.IsNullOrEmpty(item.Tags))
+                            if (!string.IsNullOrEmpty(item.Tags) && item.ImportStatus != 3)
                             {
                                 var createdBy = item.CreatedBy?.ToLower() ?? "";                         
                                 if (!dicUser.TryGetValue(createdBy, out var createdById) &&

@@ -114,6 +114,31 @@
             prgStatusTag = new ProgressBar();
             convertTag = new Button();
             tabPage2 = new TabPage();
+            tabControl2 = new TabControl();
+            tabPage5 = new TabPage();
+            label43 = new Label();
+            label44 = new Label();
+            label45 = new Label();
+            label46 = new Label();
+            label47 = new Label();
+            progressBar3 = new ProgressBar();
+            button2 = new Button();
+            tabPage6 = new TabPage();
+            label38 = new Label();
+            label39 = new Label();
+            label40 = new Label();
+            label41 = new Label();
+            label42 = new Label();
+            progressBar2 = new ProgressBar();
+            button1 = new Button();
+            label31 = new Label();
+            dateTimePicker9 = new DateTimePicker();
+            label32 = new Label();
+            dateTimePicker10 = new DateTimePicker();
+            numericUpDown1 = new NumericUpDown();
+            numericUpDown2 = new NumericUpDown();
+            label36 = new Label();
+            label37 = new Label();
             nguon_du_lieu.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -129,6 +154,12 @@
             tabControl1.SuspendLayout();
             tabPage3.SuspendLayout();
             tabPage4.SuspendLayout();
+            tabPage2.SuspendLayout();
+            tabControl2.SuspendLayout();
+            tabPage5.SuspendLayout();
+            tabPage6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
             SuspendLayout();
             // 
             // nguon_du_lieu
@@ -1026,6 +1057,15 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(tabControl2);
+            tabPage2.Controls.Add(label31);
+            tabPage2.Controls.Add(dateTimePicker9);
+            tabPage2.Controls.Add(label32);
+            tabPage2.Controls.Add(dateTimePicker10);
+            tabPage2.Controls.Add(numericUpDown1);
+            tabPage2.Controls.Add(numericUpDown2);
+            tabPage2.Controls.Add(label36);
+            tabPage2.Controls.Add(label37);
             tabPage2.Location = new Point(4, 29);
             tabPage2.Margin = new Padding(3, 4, 3, 4);
             tabPage2.Name = "tabPage2";
@@ -1034,6 +1074,252 @@
             tabPage2.TabIndex = 3;
             tabPage2.Text = "Lịch sử";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabControl2
+            // 
+            tabControl2.Controls.Add(tabPage5);
+            tabControl2.Controls.Add(tabPage6);
+            tabControl2.Location = new Point(11, 138);
+            tabControl2.Name = "tabControl2";
+            tabControl2.SelectedIndex = 0;
+            tabControl2.Size = new Size(921, 172);
+            tabControl2.TabIndex = 22;
+            // 
+            // tabPage5
+            // 
+            tabPage5.Controls.Add(label43);
+            tabPage5.Controls.Add(label44);
+            tabPage5.Controls.Add(label45);
+            tabPage5.Controls.Add(label46);
+            tabPage5.Controls.Add(label47);
+            tabPage5.Controls.Add(progressBar3);
+            tabPage5.Controls.Add(button2);
+            tabPage5.Location = new Point(4, 29);
+            tabPage5.Name = "tabPage5";
+            tabPage5.Padding = new Padding(3);
+            tabPage5.Size = new Size(913, 139);
+            tabPage5.TabIndex = 0;
+            tabPage5.Text = "Lịch sử dự án";
+            tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // label43
+            // 
+            label43.AutoSize = true;
+            label43.FlatStyle = FlatStyle.Popup;
+            label43.ForeColor = Color.Blue;
+            label43.Location = new Point(479, 41);
+            label43.Name = "label43";
+            label43.Size = new Size(17, 20);
+            label43.TabIndex = 48;
+            label43.Text = "0";
+            // 
+            // label44
+            // 
+            label44.AutoSize = true;
+            label44.Location = new Point(178, 41);
+            label44.Name = "label44";
+            label44.Size = new Size(17, 20);
+            label44.TabIndex = 47;
+            label44.Text = "0";
+            // 
+            // label45
+            // 
+            label45.AutoSize = true;
+            label45.Location = new Point(332, 41);
+            label45.Name = "label45";
+            label45.Size = new Size(153, 20);
+            label45.TabIndex = 46;
+            label45.Text = "Đồng bộ thành công: ";
+            // 
+            // label46
+            // 
+            label46.AutoSize = true;
+            label46.Location = new Point(91, 41);
+            label46.Name = "label46";
+            label46.Size = new Size(87, 20);
+            label46.TabIndex = 45;
+            label46.Text = "Tổng cộng :";
+            // 
+            // label47
+            // 
+            label47.AutoSize = true;
+            label47.Location = new Point(9, 78);
+            label47.Name = "label47";
+            label47.Size = new Size(67, 20);
+            label47.TabIndex = 44;
+            label47.Text = "Tiến độ  ";
+            // 
+            // progressBar3
+            // 
+            progressBar3.Location = new Point(91, 78);
+            progressBar3.Margin = new Padding(3, 4, 3, 4);
+            progressBar3.Name = "progressBar3";
+            progressBar3.Size = new Size(555, 20);
+            progressBar3.TabIndex = 43;
+            // 
+            // button2
+            // 
+            button2.AutoEllipsis = true;
+            button2.Location = new Point(689, 66);
+            button2.Margin = new Padding(3, 4, 3, 4);
+            button2.Name = "button2";
+            button2.Size = new Size(213, 32);
+            button2.TabIndex = 42;
+            button2.Text = "Đồng bộ history dự án";
+            button2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage6
+            // 
+            tabPage6.Controls.Add(label38);
+            tabPage6.Controls.Add(label39);
+            tabPage6.Controls.Add(label40);
+            tabPage6.Controls.Add(label41);
+            tabPage6.Controls.Add(label42);
+            tabPage6.Controls.Add(progressBar2);
+            tabPage6.Controls.Add(button1);
+            tabPage6.Location = new Point(4, 29);
+            tabPage6.Name = "tabPage6";
+            tabPage6.Padding = new Padding(3);
+            tabPage6.Size = new Size(913, 139);
+            tabPage6.TabIndex = 1;
+            tabPage6.Text = "Lịch sử công việc";
+            tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // label38
+            // 
+            label38.AutoSize = true;
+            label38.FlatStyle = FlatStyle.Popup;
+            label38.ForeColor = Color.Blue;
+            label38.Location = new Point(479, 41);
+            label38.Name = "label38";
+            label38.Size = new Size(17, 20);
+            label38.TabIndex = 48;
+            label38.Text = "0";
+            // 
+            // label39
+            // 
+            label39.AutoSize = true;
+            label39.Location = new Point(178, 41);
+            label39.Name = "label39";
+            label39.Size = new Size(17, 20);
+            label39.TabIndex = 47;
+            label39.Text = "0";
+            // 
+            // label40
+            // 
+            label40.AutoSize = true;
+            label40.Location = new Point(332, 41);
+            label40.Name = "label40";
+            label40.Size = new Size(153, 20);
+            label40.TabIndex = 46;
+            label40.Text = "Đồng bộ thành công: ";
+            // 
+            // label41
+            // 
+            label41.AutoSize = true;
+            label41.Location = new Point(91, 41);
+            label41.Name = "label41";
+            label41.Size = new Size(87, 20);
+            label41.TabIndex = 45;
+            label41.Text = "Tổng cộng :";
+            // 
+            // label42
+            // 
+            label42.AutoSize = true;
+            label42.Location = new Point(9, 78);
+            label42.Name = "label42";
+            label42.Size = new Size(67, 20);
+            label42.TabIndex = 44;
+            label42.Text = "Tiến độ  ";
+            // 
+            // progressBar2
+            // 
+            progressBar2.Location = new Point(91, 78);
+            progressBar2.Margin = new Padding(3, 4, 3, 4);
+            progressBar2.Name = "progressBar2";
+            progressBar2.Size = new Size(555, 20);
+            progressBar2.TabIndex = 43;
+            // 
+            // button1
+            // 
+            button1.AutoEllipsis = true;
+            button1.Location = new Point(681, 66);
+            button1.Margin = new Padding(3, 4, 3, 4);
+            button1.Name = "button1";
+            button1.Size = new Size(221, 32);
+            button1.TabIndex = 42;
+            button1.Text = "Đồng bộ history công việc";
+            button1.UseVisualStyleBackColor = true;
+            // 
+            // label31
+            // 
+            label31.AutoSize = true;
+            label31.Location = new Point(314, 89);
+            label31.Name = "label31";
+            label31.Size = new Size(70, 20);
+            label31.TabIndex = 21;
+            label31.Text = "End Date";
+            // 
+            // dateTimePicker9
+            // 
+            dateTimePicker9.CustomFormat = "dd/MM/yyyy";
+            dateTimePicker9.Format = DateTimePickerFormat.Custom;
+            dateTimePicker9.Location = new Point(409, 87);
+            dateTimePicker9.Name = "dateTimePicker9";
+            dateTimePicker9.Size = new Size(257, 27);
+            dateTimePicker9.TabIndex = 20;
+            // 
+            // label32
+            // 
+            label32.AutoSize = true;
+            label32.Location = new Point(314, 29);
+            label32.Name = "label32";
+            label32.Size = new Size(76, 20);
+            label32.TabIndex = 19;
+            label32.Text = "Start Date";
+            // 
+            // dateTimePicker10
+            // 
+            dateTimePicker10.CustomFormat = "dd/MM/yyyy";
+            dateTimePicker10.Format = DateTimePickerFormat.Custom;
+            dateTimePicker10.Location = new Point(409, 27);
+            dateTimePicker10.Name = "dateTimePicker10";
+            dateTimePicker10.Size = new Size(257, 27);
+            dateTimePicker10.TabIndex = 18;
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Location = new Point(126, 84);
+            numericUpDown1.Margin = new Padding(3, 4, 3, 4);
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(134, 27);
+            numericUpDown1.TabIndex = 17;
+            // 
+            // numericUpDown2
+            // 
+            numericUpDown2.Location = new Point(126, 27);
+            numericUpDown2.Margin = new Padding(3, 4, 3, 4);
+            numericUpDown2.Name = "numericUpDown2";
+            numericUpDown2.Size = new Size(134, 27);
+            numericUpDown2.TabIndex = 16;
+            // 
+            // label36
+            // 
+            label36.AutoSize = true;
+            label36.Location = new Point(56, 87);
+            label36.Name = "label36";
+            label36.Size = new Size(68, 20);
+            label36.TabIndex = 15;
+            label36.Text = "PageSize";
+            // 
+            // label37
+            // 
+            label37.AutoSize = true;
+            label37.Location = new Point(56, 27);
+            label37.Name = "label37";
+            label37.Size = new Size(41, 20);
+            label37.TabIndex = 14;
+            label37.Text = "Page";
             // 
             // Form1
             // 
@@ -1072,6 +1358,15 @@
             tabPage3.PerformLayout();
             tabPage4.ResumeLayout(false);
             tabPage4.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
+            tabControl2.ResumeLayout(false);
+            tabPage5.ResumeLayout(false);
+            tabPage5.PerformLayout();
+            tabPage6.ResumeLayout(false);
+            tabPage6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
             ResumeLayout(false);
         }
 
@@ -1164,5 +1459,30 @@
         private DateTimePicker dateTimePicker8;
         private Label label24;
         private Label label25;
+        private Label label31;
+        private DateTimePicker dateTimePicker9;
+        private Label label32;
+        private DateTimePicker dateTimePicker10;
+        private NumericUpDown numericUpDown1;
+        private NumericUpDown numericUpDown2;
+        private Label label36;
+        private Label label37;
+        private TabControl tabControl2;
+        private TabPage tabPage5;
+        private TabPage tabPage6;
+        public Label label43;
+        public Label label44;
+        private Label label45;
+        private Label label46;
+        private Label label47;
+        public ProgressBar progressBar3;
+        private Button button2;
+        public Label label38;
+        public Label label39;
+        private Label label40;
+        private Label label41;
+        private Label label42;
+        public ProgressBar progressBar2;
+        private Button button1;
     }
 }

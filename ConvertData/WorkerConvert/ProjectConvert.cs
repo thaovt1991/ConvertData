@@ -51,29 +51,46 @@ namespace ConvertData.WorkerConvert
 
                 var filterBuilder = Builders<PM_Projects>.Filter;
                 //var filter = filterBuilder.Empty;
-                var filter = !filterBuilder.Eq(x => x.PortalStatus, "2"); //đã chuyển đổi
+                var filter = filterBuilder.Ne(x => x.PortalStatus, "2"); //đã chuyển đổi
+                filter &= filterBuilder.Ne(x => x.IsTemplate, "1");
+
                 var startCreatedDate = parameterModel?.StartCreatedDate;
                 var endCreatedDate = parameterModel?.EndCreatedDate;
-
-                if (!string.IsNullOrEmpty(startCreatedDate))
+                if (!string.IsNullOrEmpty(startCreatedDate) && DateTime.TryParse(startCreatedDate, out DateTime start))
                 {
-                    if (DateTime.TryParse(startCreatedDate, out DateTime start))
-                    {
-                        filter &= filterBuilder.Gte(x => x.CreatedOn, start);
-                    }
+                    // Tìm từ 00:00:00 của ngày bắt đầu
+                    filter &= filterBuilder.Gte(x => x.CreatedOn, start.Date);
                 }
 
-                if (!string.IsNullOrEmpty(endCreatedDate))
+                if (!string.IsNullOrEmpty(endCreatedDate) && DateTime.TryParse(endCreatedDate, out DateTime end))
                 {
-                    if (DateTime.TryParse(endCreatedDate, out DateTime end))
-                    {
-                        var endOfDay = end.Date.AddDays(1).AddTicks(-1);
-                        filter &= filterBuilder.Lte(x => x.CreatedOn, endOfDay);
-                    }
+                    // Tìm đến 23:59:59 của ngày kết thúc
+                    var endOfDay = end.Date.AddDays(1).AddTicks(-1);
+                    filter &= filterBuilder.Lte(x => x.CreatedOn, endOfDay);
                 }
+
+                //if (!string.IsNullOrEmpty(startCreatedDate))
+                //{
+                //    if (DateTime.TryParse(startCreatedDate, out DateTime start))
+                //    {
+                //        // Ép về 00:00:00 và đặt chuẩn UTC
+                //        var utcStart = DateTime.SpecifyKind(start.Date, DateTimeKind.Utc);
+                //        filter &= filterBuilder.Gte(x => x.CreatedOn, utcStart);
+                //    }
+                //}
+
+                //if (!string.IsNullOrEmpty(endCreatedDate))
+                //{
+                //    if (DateTime.TryParse(endCreatedDate, out DateTime end))
+                //    {
+                //        var endOfDay = end.Date.AddDays(1).AddTicks(-1);
+                //        var utcEnd = DateTime.SpecifyKind(endOfDay, DateTimeKind.Utc);
+                //        filter &= filterBuilder.Lte(x => x.CreatedOn, utcEnd);
+                //    }
+                //}
 
                 var listProjects = await _pmProject_Collection.Find(filter)
-                                            .Skip((parameterModel.Page - 1) * parameterModel.PageSize)
+                                           .Skip((parameterModel.Page - 1) * parameterModel.PageSize)
                                           .Limit(parameterModel.PageSize).ToListAsync();
 
                 _parentForm.countPr.Text = (listProjects?.Count ?? 0).ToString();
@@ -114,7 +131,7 @@ namespace ConvertData.WorkerConvert
                         if (isSuccces)
                         {
                             var isSucTag = false;
-                            if (!string.IsNullOrEmpty(item.Tags))
+                            if (!string.IsNullOrEmpty(item.Tags) && item.ConvertStatus !=3)
                             {
                                 var createdBy = item.CreatedBy?.ToLower() ?? "";
                                 if (!dicUser.TryGetValue(createdBy, out var createdById) &&
@@ -256,7 +273,10 @@ namespace ConvertData.WorkerConvert
 
         public async Task<bool> AddProjectToSQLServer(PM_Projects item, Dictionary<string, Guid> dicUsers)
         {
-            if (string.IsNullOrEmpty(item.ProjectID)) return false;
+            if (string.IsNullOrEmpty(item.ProjectID))  {
+                _parentForm.richTextBox1.AppendText($"Dự án '{item.ProjectName}' không có mã dự án nên đã bị bỏ qua ! \n");
+                return false; 
+            }
             SQLProject project = MapToSQL(item, dicUsers);
             //Conver
             using (var db = new SqlConnection(_connectModel.ConnectionStringSQL))

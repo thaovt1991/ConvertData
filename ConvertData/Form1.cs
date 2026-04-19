@@ -66,6 +66,13 @@ namespace ConverData
             numericPageSizeTM.Minimum = 1;
             numericPageSizeTM.Maximum = 20000;   // Tối đa 20000 dòng để tránh treo ram
             numericPageSizeTM.Value = 1; // 1000;  //t
+
+            numericPageHis.Value = 1;
+            numericPageHis.Minimum = 1;
+            //numericPageTM.Maximum = 1000;   // Tối đa 1000 dòng để tránh treo ram
+            numericPageSizeHis.Minimum = 1;
+            numericPageSizeHis.Maximum = 20000;   // Tối đa 20000 dòng để tránh treo ram
+            numericPageSizeHis.Value = 1; // 1000;  //t
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -332,14 +339,14 @@ namespace ConverData
                 ConnectionStringPG = _connectStringPG,
                 ConnectionStringMG = this._connectStringMG,
                 ConnectionStringSQL = this._connectStringSQL,
-                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+                DatabaseNameMG = _databaseName   //tesst
             };
             var parameterModel = new ParameterModelTask()
             {
                 Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
                 PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
-                StartCreatedDate = dateTimePicker3.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                EndCreatedDate = dateTimePicker4.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                StartCreatedDate = dateTimePicker3.Value.ToString( ),
+                EndCreatedDate = dateTimePicker4.Value.ToString( ),
                 IsUpdateFull = true,
                 IsUpdateTask = true,
                 IsUpdateTaskRes = true
@@ -385,14 +392,14 @@ namespace ConverData
             {
                 ConnectionStringMG = this._connectStringMG,
                 ConnectionStringSQL = this._connectStringSQL,
-                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+                DatabaseNameMG = _databaseName   //tesst
             };
             var parameterModel = new ParameterModel()
             {
                 Page = !string.IsNullOrEmpty(numericPage.Text) ? Int32.Parse(numericPage.Text) : 1,
                 PageSize = !string.IsNullOrEmpty(numericPageSize.Text) ? Int32.Parse(numericPageSize.Text) : 100,
-                StartCreatedDate = dateTimePicker1.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                EndCreatedDate = dateTimePicker2.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                StartCreatedDate = dateTimePicker1.Value.ToString( ),
+                EndCreatedDate = dateTimePicker2.Value.ToString( )
             };
 
             var coverter = await new ProjectConvert(this, _logger, connectModel).ConvertDataProject(parameterModel);
@@ -489,14 +496,14 @@ namespace ConverData
                 ConnectionStringPG = _connectStringPG,
                 ConnectionStringMG = this._connectStringMG,
                 ConnectionStringSQL = this._connectStringSQL,
-                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+                DatabaseNameMG = _databaseName   //tesst
             };
             var parameterModel = new ParameterModelTag()
             {
                 //Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
                 //PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
-                //StartCreatedDate = dateTimePicker3.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                //EndCreatedDate = dateTimePicker4.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                //StartCreatedDate = dateTimePicker3.Value.ToString( ),
+                //EndCreatedDate = dateTimePicker4.Value.ToString( ),
                 EntityNames = new List<string>() { "TM_Tasks", "PM_Project" }
             };
 
@@ -519,14 +526,14 @@ namespace ConverData
                 ConnectionStringPG = _connectStringPG,
                 ConnectionStringMG = this._connectStringMG,
                 ConnectionStringSQL = this._connectStringSQL,
-                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+                DatabaseNameMG = _databaseName  //tesst
             };
             var parameterModel = new ParameterModelTag()
             {
                 //Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
                 //PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
-                StartCreatedDate = dateTimePicker6.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                EndCreatedDate = dateTimePicker5.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                StartCreatedDate = startPickerTagTask.Value.ToString( ),
+                EndCreatedDate = endTimeTagTask.Value.ToString( ),
                 EntityNames = new List<string>() { "TM_Tasks", "PM_Project" }
             };
 
@@ -549,14 +556,14 @@ namespace ConverData
                 ConnectionStringPG = _connectStringPG,
                 ConnectionStringMG = this._connectStringMG,
                 ConnectionStringSQL = this._connectStringSQL,
-                DatabaseNameMG = _databaseName ?? "developer_Data" //tesst
+                DatabaseNameMG = _databaseName //tesst
             };
             var parameterModel = new ParameterModelTag()
             {
                 //Page = !string.IsNullOrEmpty(numericPageTM.Text) ? Int32.Parse(numericPageTM.Text) : 1,
                 //PageSize = !string.IsNullOrEmpty(numericPageSizeTM.Text) ? Int32.Parse(numericPageSizeTM.Text) : 100,
-                StartCreatedDate = dateTimePicker7.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                EndCreatedDate = dateTimePicker8.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                StartCreatedDate = dateTimePicker7.Value.ToString( ),
+                EndCreatedDate = dateTimePicker8.Value.ToString( ),
                 EntityNames = new List<string>() { "TM_Tasks", "PM_Project" }
             };
 
@@ -566,6 +573,66 @@ namespace ConverData
 
             bttConvertProTag.Enabled = true;
             richTextBox1.AppendText("Đồng bộ Tag dự án hoàn tất! \n");
+        }
+
+        private async void button2_Click_1(object sender, EventArgs e)
+        {
+            button2.Enabled = false;
+
+            progressBar3.Value = 0;
+
+            var connectModel = new ConnectionModel()
+            {
+                ConnectionStringPG = _connectStringPG,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
+                DatabaseNameMG = _databaseName   //tesst
+            };
+            var parameterModel = new ParameterModelHistory()
+            {
+                Page = !string.IsNullOrEmpty(numericPageHis.Text) ? Int32.Parse(numericPageHis.Text) : 1,
+                PageSize = !string.IsNullOrEmpty(numericPageSizeHis.Text) ? Int32.Parse(numericPageSizeHis.Text) : 100,
+                StartCreatedDate = startHisMG.Value.ToString( ),
+                EndCreatedDate = endHisMG.Value.ToString( ),
+                ObjectType = "PM_Projects"
+            };
+
+            var coverter = await new HistoryConvert(this, _logger, connectModel).ConvertToHistorySQL(parameterModel);
+
+            //Test
+
+            button2.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ lịch sử dự án hoàn tất! \n");
+        }
+
+        private async void button1_Click_1(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+
+            progressHisTask.Value = 0;
+
+            var connectModel = new ConnectionModel()
+            {
+                ConnectionStringPG = _connectStringPG,
+                ConnectionStringMG = this._connectStringMG,
+                ConnectionStringSQL = this._connectStringSQL,
+                DatabaseNameMG = _databaseName   //tesst
+            };
+            var parameterModel = new ParameterModelHistory()
+            {
+                Page = !string.IsNullOrEmpty(numericPageHis.Text) ? Int32.Parse(numericPageHis.Text) : 1,
+                PageSize = !string.IsNullOrEmpty(numericPageSizeHis.Text) ? Int32.Parse(numericPageSizeHis.Text) : 100,
+                StartCreatedDate = startHisMG.Value.ToString( ),
+                EndCreatedDate = endHisMG.Value.ToString( ),
+                ObjectType = "TM_Tasks"
+            };
+
+            var coverter = await new HistoryConvert(this, _logger, connectModel).ConvertToHistorySQL(parameterModel);
+
+            //Test
+
+            button1.Enabled = true;
+            richTextBox1.AppendText("Đồng bộ lịch sử dự án hoàn tất! \n");
         }
     }
 }

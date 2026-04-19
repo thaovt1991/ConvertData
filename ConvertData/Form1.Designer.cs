@@ -90,8 +90,8 @@
             label35 = new Label();
             progressBarTaskTag = new ProgressBar();
             convertTaskTag = new Button();
-            dateTimePicker6 = new DateTimePicker();
-            dateTimePicker5 = new DateTimePicker();
+            startPickerTagTask = new DateTimePicker();
+            endTimeTagTask = new DateTimePicker();
             label20 = new Label();
             label17 = new Label();
             tabPage4 = new TabPage();
@@ -116,27 +116,27 @@
             tabPage2 = new TabPage();
             tabControl2 = new TabControl();
             tabPage5 = new TabPage();
-            label43 = new Label();
-            label44 = new Label();
+            countSucHisPro = new Label();
+            coutHisProject = new Label();
             label45 = new Label();
             label46 = new Label();
             label47 = new Label();
             progressBar3 = new ProgressBar();
             button2 = new Button();
             tabPage6 = new TabPage();
-            label38 = new Label();
+            countSucTaskTag = new Label();
             label39 = new Label();
             label40 = new Label();
             label41 = new Label();
             label42 = new Label();
-            progressBar2 = new ProgressBar();
+            progressHisTask = new ProgressBar();
             button1 = new Button();
             label31 = new Label();
-            dateTimePicker9 = new DateTimePicker();
+            endHisMG = new DateTimePicker();
             label32 = new Label();
-            dateTimePicker10 = new DateTimePicker();
-            numericUpDown1 = new NumericUpDown();
-            numericUpDown2 = new NumericUpDown();
+            startHisMG = new DateTimePicker();
+            numericPageSizeHis = new NumericUpDown();
+            numericPageHis = new NumericUpDown();
             label36 = new Label();
             label37 = new Label();
             nguon_du_lieu.SuspendLayout();
@@ -158,8 +158,8 @@
             tabControl2.SuspendLayout();
             tabPage5.SuspendLayout();
             tabPage6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageSizeHis).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageHis).BeginInit();
             SuspendLayout();
             // 
             // nguon_du_lieu
@@ -749,8 +749,8 @@
             tabPage3.Controls.Add(label35);
             tabPage3.Controls.Add(progressBarTaskTag);
             tabPage3.Controls.Add(convertTaskTag);
-            tabPage3.Controls.Add(dateTimePicker6);
-            tabPage3.Controls.Add(dateTimePicker5);
+            tabPage3.Controls.Add(startPickerTagTask);
+            tabPage3.Controls.Add(endTimeTagTask);
             tabPage3.Controls.Add(label20);
             tabPage3.Controls.Add(label17);
             tabPage3.Location = new Point(4, 29);
@@ -828,23 +828,23 @@
             convertTaskTag.UseVisualStyleBackColor = true;
             convertTaskTag.Click += button2_Click;
             // 
-            // dateTimePicker6
+            // startPickerTagTask
             // 
-            dateTimePicker6.CustomFormat = "dd/MM/yyyy";
-            dateTimePicker6.Format = DateTimePickerFormat.Custom;
-            dateTimePicker6.Location = new Point(121, 26);
-            dateTimePicker6.Name = "dateTimePicker6";
-            dateTimePicker6.Size = new Size(257, 27);
-            dateTimePicker6.TabIndex = 31;
+            startPickerTagTask.CustomFormat = "dd/MM/yyyy";
+            startPickerTagTask.Format = DateTimePickerFormat.Custom;
+            startPickerTagTask.Location = new Point(121, 26);
+            startPickerTagTask.Name = "startPickerTagTask";
+            startPickerTagTask.Size = new Size(257, 27);
+            startPickerTagTask.TabIndex = 31;
             // 
-            // dateTimePicker5
+            // endTimeTagTask
             // 
-            dateTimePicker5.CustomFormat = "dd/MM/yyyy";
-            dateTimePicker5.Format = DateTimePickerFormat.Custom;
-            dateTimePicker5.Location = new Point(477, 26);
-            dateTimePicker5.Name = "dateTimePicker5";
-            dateTimePicker5.Size = new Size(257, 27);
-            dateTimePicker5.TabIndex = 33;
+            endTimeTagTask.CustomFormat = "dd/MM/yyyy";
+            endTimeTagTask.Format = DateTimePickerFormat.Custom;
+            endTimeTagTask.Location = new Point(477, 26);
+            endTimeTagTask.Name = "endTimeTagTask";
+            endTimeTagTask.Size = new Size(257, 27);
+            endTimeTagTask.TabIndex = 33;
             // 
             // label20
             // 
@@ -1059,11 +1059,11 @@
             // 
             tabPage2.Controls.Add(tabControl2);
             tabPage2.Controls.Add(label31);
-            tabPage2.Controls.Add(dateTimePicker9);
+            tabPage2.Controls.Add(endHisMG);
             tabPage2.Controls.Add(label32);
-            tabPage2.Controls.Add(dateTimePicker10);
-            tabPage2.Controls.Add(numericUpDown1);
-            tabPage2.Controls.Add(numericUpDown2);
+            tabPage2.Controls.Add(startHisMG);
+            tabPage2.Controls.Add(numericPageSizeHis);
+            tabPage2.Controls.Add(numericPageHis);
             tabPage2.Controls.Add(label36);
             tabPage2.Controls.Add(label37);
             tabPage2.Location = new Point(4, 29);
@@ -1087,8 +1087,8 @@
             // 
             // tabPage5
             // 
-            tabPage5.Controls.Add(label43);
-            tabPage5.Controls.Add(label44);
+            tabPage5.Controls.Add(countSucHisPro);
+            tabPage5.Controls.Add(coutHisProject);
             tabPage5.Controls.Add(label45);
             tabPage5.Controls.Add(label46);
             tabPage5.Controls.Add(label47);
@@ -1102,25 +1102,25 @@
             tabPage5.Text = "Lịch sử dự án";
             tabPage5.UseVisualStyleBackColor = true;
             // 
-            // label43
+            // countSucHisPro
             // 
-            label43.AutoSize = true;
-            label43.FlatStyle = FlatStyle.Popup;
-            label43.ForeColor = Color.Blue;
-            label43.Location = new Point(479, 41);
-            label43.Name = "label43";
-            label43.Size = new Size(17, 20);
-            label43.TabIndex = 48;
-            label43.Text = "0";
+            countSucHisPro.AutoSize = true;
+            countSucHisPro.FlatStyle = FlatStyle.Popup;
+            countSucHisPro.ForeColor = Color.Blue;
+            countSucHisPro.Location = new Point(481, 41);
+            countSucHisPro.Name = "countSucHisPro";
+            countSucHisPro.Size = new Size(17, 20);
+            countSucHisPro.TabIndex = 48;
+            countSucHisPro.Text = "0";
             // 
-            // label44
+            // coutHisProject
             // 
-            label44.AutoSize = true;
-            label44.Location = new Point(178, 41);
-            label44.Name = "label44";
-            label44.Size = new Size(17, 20);
-            label44.TabIndex = 47;
-            label44.Text = "0";
+            coutHisProject.AutoSize = true;
+            coutHisProject.Location = new Point(178, 41);
+            coutHisProject.Name = "coutHisProject";
+            coutHisProject.Size = new Size(17, 20);
+            coutHisProject.TabIndex = 47;
+            coutHisProject.Text = "0";
             // 
             // label45
             // 
@@ -1167,15 +1167,16 @@
             button2.TabIndex = 42;
             button2.Text = "Đồng bộ history dự án";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click_1;
             // 
             // tabPage6
             // 
-            tabPage6.Controls.Add(label38);
+            tabPage6.Controls.Add(countSucTaskTag);
             tabPage6.Controls.Add(label39);
             tabPage6.Controls.Add(label40);
             tabPage6.Controls.Add(label41);
             tabPage6.Controls.Add(label42);
-            tabPage6.Controls.Add(progressBar2);
+            tabPage6.Controls.Add(progressHisTask);
             tabPage6.Controls.Add(button1);
             tabPage6.Location = new Point(4, 29);
             tabPage6.Name = "tabPage6";
@@ -1185,16 +1186,16 @@
             tabPage6.Text = "Lịch sử công việc";
             tabPage6.UseVisualStyleBackColor = true;
             // 
-            // label38
+            // countSucTaskTag
             // 
-            label38.AutoSize = true;
-            label38.FlatStyle = FlatStyle.Popup;
-            label38.ForeColor = Color.Blue;
-            label38.Location = new Point(479, 41);
-            label38.Name = "label38";
-            label38.Size = new Size(17, 20);
-            label38.TabIndex = 48;
-            label38.Text = "0";
+            countSucTaskTag.AutoSize = true;
+            countSucTaskTag.FlatStyle = FlatStyle.Popup;
+            countSucTaskTag.ForeColor = Color.Blue;
+            countSucTaskTag.Location = new Point(479, 41);
+            countSucTaskTag.Name = "countSucTaskTag";
+            countSucTaskTag.Size = new Size(17, 20);
+            countSucTaskTag.TabIndex = 48;
+            countSucTaskTag.Text = "0";
             // 
             // label39
             // 
@@ -1232,13 +1233,13 @@
             label42.TabIndex = 44;
             label42.Text = "Tiến độ  ";
             // 
-            // progressBar2
+            // progressHisTask
             // 
-            progressBar2.Location = new Point(91, 78);
-            progressBar2.Margin = new Padding(3, 4, 3, 4);
-            progressBar2.Name = "progressBar2";
-            progressBar2.Size = new Size(555, 20);
-            progressBar2.TabIndex = 43;
+            progressHisTask.Location = new Point(91, 78);
+            progressHisTask.Margin = new Padding(3, 4, 3, 4);
+            progressHisTask.Name = "progressHisTask";
+            progressHisTask.Size = new Size(555, 20);
+            progressHisTask.TabIndex = 43;
             // 
             // button1
             // 
@@ -1250,6 +1251,7 @@
             button1.TabIndex = 42;
             button1.Text = "Đồng bộ history công việc";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
             // 
             // label31
             // 
@@ -1260,14 +1262,14 @@
             label31.TabIndex = 21;
             label31.Text = "End Date";
             // 
-            // dateTimePicker9
+            // endHisMG
             // 
-            dateTimePicker9.CustomFormat = "dd/MM/yyyy";
-            dateTimePicker9.Format = DateTimePickerFormat.Custom;
-            dateTimePicker9.Location = new Point(409, 87);
-            dateTimePicker9.Name = "dateTimePicker9";
-            dateTimePicker9.Size = new Size(257, 27);
-            dateTimePicker9.TabIndex = 20;
+            endHisMG.CustomFormat = "dd/MM/yyyy";
+            endHisMG.Format = DateTimePickerFormat.Custom;
+            endHisMG.Location = new Point(409, 87);
+            endHisMG.Name = "endHisMG";
+            endHisMG.Size = new Size(257, 27);
+            endHisMG.TabIndex = 20;
             // 
             // label32
             // 
@@ -1278,30 +1280,30 @@
             label32.TabIndex = 19;
             label32.Text = "Start Date";
             // 
-            // dateTimePicker10
+            // startHisMG
             // 
-            dateTimePicker10.CustomFormat = "dd/MM/yyyy";
-            dateTimePicker10.Format = DateTimePickerFormat.Custom;
-            dateTimePicker10.Location = new Point(409, 27);
-            dateTimePicker10.Name = "dateTimePicker10";
-            dateTimePicker10.Size = new Size(257, 27);
-            dateTimePicker10.TabIndex = 18;
+            startHisMG.CustomFormat = "dd/MM/yyyy";
+            startHisMG.Format = DateTimePickerFormat.Custom;
+            startHisMG.Location = new Point(409, 27);
+            startHisMG.Name = "startHisMG";
+            startHisMG.Size = new Size(257, 27);
+            startHisMG.TabIndex = 18;
             // 
-            // numericUpDown1
+            // numericPageSizeHis
             // 
-            numericUpDown1.Location = new Point(126, 84);
-            numericUpDown1.Margin = new Padding(3, 4, 3, 4);
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(134, 27);
-            numericUpDown1.TabIndex = 17;
+            numericPageSizeHis.Location = new Point(126, 84);
+            numericPageSizeHis.Margin = new Padding(3, 4, 3, 4);
+            numericPageSizeHis.Name = "numericPageSizeHis";
+            numericPageSizeHis.Size = new Size(134, 27);
+            numericPageSizeHis.TabIndex = 17;
             // 
-            // numericUpDown2
+            // numericPageHis
             // 
-            numericUpDown2.Location = new Point(126, 27);
-            numericUpDown2.Margin = new Padding(3, 4, 3, 4);
-            numericUpDown2.Name = "numericUpDown2";
-            numericUpDown2.Size = new Size(134, 27);
-            numericUpDown2.TabIndex = 16;
+            numericPageHis.Location = new Point(126, 27);
+            numericPageHis.Margin = new Padding(3, 4, 3, 4);
+            numericPageHis.Name = "numericPageHis";
+            numericPageHis.Size = new Size(134, 27);
+            numericPageHis.TabIndex = 16;
             // 
             // label36
             // 
@@ -1365,8 +1367,8 @@
             tabPage5.PerformLayout();
             tabPage6.ResumeLayout(false);
             tabPage6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageSizeHis).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericPageHis).EndInit();
             ResumeLayout(false);
         }
 
@@ -1434,9 +1436,9 @@
         private Label label23;
         public ProgressBar prgStatusTag;
         private Button convertTag;
-        private DateTimePicker dateTimePicker5;
+        private DateTimePicker endTimeTagTask;
         private Label label17;
-        private DateTimePicker dateTimePicker6;
+        private DateTimePicker startPickerTagTask;
         private Label label20;
         private TabControl tabControl1;
         private TabPage tabPage3;
@@ -1460,29 +1462,30 @@
         private Label label24;
         private Label label25;
         private Label label31;
-        private DateTimePicker dateTimePicker9;
+        private DateTimePicker endHisMG;
         private Label label32;
-        private DateTimePicker dateTimePicker10;
-        private NumericUpDown numericUpDown1;
-        private NumericUpDown numericUpDown2;
+        private DateTimePicker startHisMG;
+        private NumericUpDown numericPageSizeHis;
+        private NumericUpDown numericPageHis;
         private Label label36;
         private Label label37;
         private TabControl tabControl2;
         private TabPage tabPage5;
         private TabPage tabPage6;
         public Label label43;
-        public Label label44;
+        public Label coutHisProject;
         private Label label45;
         private Label label46;
         private Label label47;
         public ProgressBar progressBar3;
         private Button button2;
-        public Label label38;
+        public Label countSucTaskTag;
         public Label label39;
         private Label label40;
         private Label label41;
         private Label label42;
-        public ProgressBar progressBar2;
+        public ProgressBar progressHisTask;
         private Button button1;
+        public Label countSucHisPro;
     }
 }

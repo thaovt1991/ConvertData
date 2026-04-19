@@ -40,4 +40,10 @@ namespace ConvertData.Model
     {
        public List<string> EntityNames { get; set; }
     }
+
+    public class ParameterModelHistory : ParameterModel
+    {
+        public string ObjectType { get; set; }
+    }
+
 }

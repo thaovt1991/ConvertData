@@ -43,6 +43,8 @@ namespace ConvertData.Model.ModelMongo
 
         public string TextValue { get; set; }
         public string ChildID { get; set; }
+
+        public string ConvertStatus { get; set; }
     }
 
     public class tmpObject
@@ -51,5 +53,13 @@ namespace ConvertData.Model.ModelMongo
         public string ObjectID { get; set; }
         public string ObjectName { get; set; }
 
+    }
+
+    public class tmpDataValue
+    {
+        public string FieldName { get; set; }
+        public string FieldValue { get; set; }
+        public string RefType { get; set; }
+        public string RefValue { get; set; }
     }
 }

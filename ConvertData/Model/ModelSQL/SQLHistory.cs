@@ -83,6 +83,9 @@ namespace ConvertData.Model.ModelSQL
         /// Người thực hiện hành động
         /// </summary>
         public Guid CreatedBy { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+       
+        
     }
     public enum HistoryActionType
     {
